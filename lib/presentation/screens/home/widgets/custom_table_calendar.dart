@@ -23,7 +23,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('es_ES', null); // Formato de la fecha en español
+    initializeDateFormatting('es_ES', null);
   }
 
   @override
@@ -49,6 +49,12 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
             todayTextStyle: TextStyle(color: Colors.white),
           ),
           locale: 'es_ES',
+          availableCalendarFormats: const {
+            CalendarFormat.month: 'Semana',
+            CalendarFormat.twoWeeks: 'Mes',
+            CalendarFormat.week: '2 semanas',
+            
+          },
           firstDay: DateTime.utc(2024, 1, 1),
           lastDay: DateTime.utc(3000, 12, 31),
           focusedDay: _focusedDay,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:maternapp/Routes/routes.dart';
+import 'package:maternapp/presentation/screens/home/calendar_screen.dart';
 import 'package:maternapp/presentation/screens/home/home_screens.dart';
 
 void main() async {
@@ -10,13 +12,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'MaternApp',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.pink[300],
-      ),
-      home: HomeScreens(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'MaternApp',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: Colors.pink[300],
+        ),
+        locale: Locale('es', 'ES'),
+        initialRoute: Routes.homeScreen,
+        routes: {
+          Routes.homeScreen: (context) => const HomeScreens(),
+          Routes.calendarScreen: (context) => const CalendarScreen(),
+        });
   }
 }

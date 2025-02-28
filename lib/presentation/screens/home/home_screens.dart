@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/presentation/screens/home/widgets/navbar/botton_navbar.dart';
 
-class HomeScreens extends StatelessWidget {
+class HomeScreens extends StatefulWidget {
   const HomeScreens({super.key});
 
+  @override
+  State<HomeScreens> createState() => _HomeScreensState();
+}
+
+class _HomeScreensState extends State<HomeScreens> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +30,7 @@ class HomeScreens extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const BottonNavbar(), // Agregamos el widget aquí
+      bottomNavigationBar: const BottonNavbar(), 
     );
   }
 }

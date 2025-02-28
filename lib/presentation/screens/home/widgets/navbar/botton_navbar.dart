@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/presentation/screens/home/widgets/buttons/button_calendar.dart';
+import 'package:maternapp/presentation/screens/home/widgets/buttons/button_home.dart';
 
 class BottonNavbar extends StatelessWidget {
   const BottonNavbar({super.key});
@@ -12,8 +13,8 @@ class BottonNavbar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          ButtonHome(),
           ButtonCalendar(),
-          Icon(Icons.home, size: 30),
         ],
       ),
     );
