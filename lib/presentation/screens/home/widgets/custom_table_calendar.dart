@@ -19,6 +19,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
   DateTime? _dueDate;
   String _trimesterMessage = "";
   Color _weekColor = Colors.black;
+  String _selectedDayN = "";
 
   @override
   void initState() {
@@ -28,7 +29,8 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       children: [
         Text(
           "Selecciona una fecha",
@@ -53,7 +55,6 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
             CalendarFormat.month: 'Semana',
             CalendarFormat.twoWeeks: 'Mes',
             CalendarFormat.week: '2 semanas',
-            
           },
           firstDay: DateTime.utc(2024, 1, 1),
           lastDay: DateTime.utc(3000, 12, 31),
@@ -82,6 +83,28 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
         ),
         SizedBox(height: 20),
         Text(
+          _selectedDayN,
+        ),
+        /* ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedDay = null;
+              _weeksPregnant = 0;
+              _dueDate = null;
+              _trimesterMessage = "";
+              _weekColor = Colors.black;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            iconColor: Colors.pink[300],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: Text("Limpiar"),
+        ),*/
+        SizedBox(height: 20),
+        Text(
           _selectedDay != null && _weeksPregnant != 0
               ? "Última menstruación: ${DateFormat('dd MMMM yyyy', 'es_ES').format(_selectedDay!)}"
               : "Selecciona la fecha de tu última menstruación",
@@ -93,7 +116,7 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
               ? "Semanas de embarazo: Menos de una semana"
               : "Semanas de embarazo: $_weeksPregnant",
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: _weekColor,
           ),
@@ -116,14 +139,25 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
         ),
         SizedBox(height: 30),
       ],
-    );
+    ));
   }
 
   // Calcula las semanas de embarazo y la fecha probable de parto
   void _calculatePregnancyDetails() {
     if (_selectedDay != null) {
+      // Ignorar la hora al comparar fechas
       final now = DateTime.now();
-      final difference = now.difference(_selectedDay!).inDays;
+      final today = DateTime(now.year, now.month, now.day);
+      final selectedDate =
+          DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
+
+      final difference = today.difference(selectedDate).inDays;
+
+      print("Selected Date: $selectedDate");
+      print("Today: $today");
+      print("Difference in days: $difference");
+      print("Selected Day: $_selectedDay");
+
       if (difference <= 0) {
         _weeksPregnant = 0;
         _dueDate = null;
@@ -138,7 +172,8 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
         } else {
           _weeksPregnant = (difference / 7).floor();
         }
-        _dueDate = _selectedDay!.add(Duration(days: 280));
+        _dueDate = selectedDate.add(Duration(days: 280));
+        selectedDay();
         _updateTrimesterMessage();
         _updateWeekColor();
       });
@@ -175,5 +210,12 @@ class _CustomTableCalendarState extends State<CustomTableCalendar> {
     } else {
       _weekColor = Colors.blue;
     }
+  }
+
+  void selectedDay() {
+    _selectedDay != null
+        ? _selectedDayN =
+            "Haz seleccionado el día ${DateFormat('dd MMMM yyyy', 'es_ES').format(_selectedDay!)}"
+        : _selectedDayN = "Selecciona una fecha";
   }
 }

@@ -17,6 +17,7 @@ class _HomeScreensState extends State<HomeScreens> {
         title: const Text('MaternApp'),
       ),
       backgroundColor: Colors.white,
+      
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
