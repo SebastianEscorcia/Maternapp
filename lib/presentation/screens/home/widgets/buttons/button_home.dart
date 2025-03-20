@@ -7,7 +7,7 @@ class ButtonHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        Navigator.pushNamed(context, Routes.homeScreen);
+        Navigator.popUntil(context, ModalRoute.withName(Routes.homeScreen));
       },
       style: ElevatedButton.styleFrom(
         iconColor: Colors.pink[300],
