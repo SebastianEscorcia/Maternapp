@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maternapp/presentation/screens/home/widgets/custom_table_calendar.dart';
+import 'package:maternapp/presentation/screens/home/widgets/calendar/custom_table_calendar.dart';
 import 'package:maternapp/presentation/screens/home/widgets/navbar/botton_navbar.dart';
 
 class CalendarScreen extends StatelessWidget {

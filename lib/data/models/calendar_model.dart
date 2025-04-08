@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CalendarModel {
-  DateTime? selectedDay ;
+  DateTime? selectedDay;
   DateTime focusedDay;
   int weeksPregnant;
   DateTime? dueDate;
   String trimesterMessage;
   Color weekColor;
-
+  DateTime? lastDayYear;
   CalendarModel({
     this.selectedDay,
     required this.focusedDay,
