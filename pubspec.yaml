@@ -38,6 +38,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
+  lottie: ^3.3.1
+  video_player: ^2.9.5
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:
@@ -60,7 +63,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-   - assets/images/maternapp.png
+    - assets/images/maternapp.png
+    - assets/icons/
+    - assets/animations/welcome.json
+    - assets/videos/welcome.mp4
+    - assets/animations/women_pregnant.json
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

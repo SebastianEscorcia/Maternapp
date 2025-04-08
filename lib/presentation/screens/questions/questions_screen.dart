@@ -8,10 +8,11 @@ import 'package:maternapp/domain/controllers/maternal_controller.dart';
 import 'package:maternapp/domain/controllers/questions_controller.dart';
 import 'package:maternapp/domain/services/maternal_services.dart';
 import 'package:maternapp/domain/services/questions_services.dart';
-import 'package:maternapp/presentation/screens/home/widgets/calendar/custom_table_calendar.dart';
+import 'package:maternapp/presentation/layout/layout_scaffold.dart';
 import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/dropdown_questions_card.dart';
 import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/input_question_card.dart';
 import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/yes_no_questions_card.dart';
+import 'package:maternapp/presentation/screens/home/widgets/calendar/custom_table_calendar.dart';
 import 'package:maternapp/core/utils/alerts/alerts.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,7 @@ class QuestionScreen extends StatelessWidget {
           inputType: TextInputType.name,
           initialValue: draftProviderMaterna.draft.nombre,
           onChanged: (val) => draftProviderMaterna.updateNombre(val),
+          icon: Icons.person,
         ),
         InputQuestionCard(
           questionText: "¿Cuál es tu edad?",
@@ -33,6 +35,7 @@ class QuestionScreen extends StatelessWidget {
           initialValue: draftProviderMaterna.draft.edad?.toString(),
           onChanged: (val) =>
               draftProviderMaterna.updateEdad(int.tryParse(val) ?? 0),
+          icon: Icons.cake,
         ),
         InputQuestionCard(
           questionText: "¿Cuál es tu peso en kg?",
@@ -41,6 +44,7 @@ class QuestionScreen extends StatelessWidget {
           initialValue: draftProviderMaterna.draft.peso?.toString(),
           onChanged: (val) =>
               draftProviderMaterna.updatePeso(double.tryParse(val) ?? 0),
+          icon: Icons.monitor_weight, // 👈 ícono representativo
         ),
         InputQuestionCard(
           questionText: "¿Cuál es tu estatura en metros?",
@@ -49,6 +53,7 @@ class QuestionScreen extends StatelessWidget {
           initialValue: draftProviderMaterna.draft.estatura?.toString(),
           onChanged: (val) =>
               draftProviderMaterna.updateEstatura(double.tryParse(val) ?? 0),
+          icon: Icons.height,
         ),
         YesNoQuestionCard(
           questionText: "¿Estás embarazada actualmente?",
@@ -56,6 +61,7 @@ class QuestionScreen extends StatelessWidget {
           onChanged: (val) {
             if (val != null) draftProviderMaterna.updateEmbarazoActual(val);
           },
+          icon: Icons.favorite,
         ),
         YesNoQuestionCard(
           questionText: "¿Es tu primer embarazo?",
@@ -70,6 +76,7 @@ class QuestionScreen extends StatelessWidget {
           selectedValue: draftProviderMaterna.draft.tipoEmbarazo,
           onChanged: (val) =>
               draftProviderMaterna.updateTipoEmbarazo(val ?? ""),
+          icon: Icons.family_restroom, // 👨‍👩‍👧
         ),
         YesNoQuestionCard(
           questionText: "¿Tienes antecedentes médicos relevantes?",
@@ -84,7 +91,8 @@ class QuestionScreen extends StatelessWidget {
   void onFinalizar(BuildContext context) {
     final preguntaController = PreguntaController(
       draftProvider: Provider.of<MaternaDraftProvider>(context, listen: false),
-      calendarController: Provider.of<CalendarController>(context, listen: false),
+      calendarController:
+          Provider.of<CalendarController>(context, listen: false),
       preguntaService: QuestionsServices(),
       maternaService: MaternalService(),
       maternaController: MaternalController(maternalService: MaternalService()),
@@ -114,40 +122,46 @@ class QuestionScreen extends StatelessWidget {
     final questions = buildQuestions(draftProviderMaterna);
     final isLast = nextOrPreviusQuestionsProvider.index == questions.length - 1;
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
+    return LayoutScaffold(
+      showBack: false,
+      child: Column(
+        children: [
+          Expanded(
               child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: KeyedSubtree(
-                  key: ValueKey(nextOrPreviusQuestionsProvider.index),
-                  child: questions[nextOrPreviusQuestionsProvider.index],
-                ),
-              ),
+            duration: const Duration(milliseconds: 500),
+            transitionBuilder: (child, animation) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: FadeTransition(opacity: animation, child: child),
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey(nextOrPreviusQuestionsProvider.index),
+              child: questions[nextOrPreviusQuestionsProvider.index],
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (nextOrPreviusQuestionsProvider.index > 0)
-                  ElevatedButton(
-                    onPressed: nextOrPreviusQuestionsProvider.previousPage,
-                    child: const Text("Anterior"),
-                  ),
+          )),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (nextOrPreviusQuestionsProvider.index > 0)
                 ElevatedButton(
-                  onPressed: isLast
-                      ? () => onFinalizar(context)
-                      : () => nextOrPreviusQuestionsProvider
-                          .nextPage(questions.length),
-                  child: Text(isLast ? "Finalizar" : "Siguiente"),
+                  onPressed: nextOrPreviusQuestionsProvider.previousPage,
+                  child: const Text("Anterior"),
                 ),
-              ],
-            )
-          ],
-        ),
+              ElevatedButton(
+                onPressed: isLast
+                    ? () => onFinalizar(context)
+                    : () => nextOrPreviusQuestionsProvider
+                        .nextPage(questions.length),
+                child: Text(isLast ? "Finalizar" : "Siguiente"),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

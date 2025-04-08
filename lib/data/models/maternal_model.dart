@@ -26,16 +26,31 @@ class Materna {
   });
 
   Map<String, dynamic> toJson() => {
-    'nombre': nombre,
-    'edad': edad,
-    'peso': peso,
-    'estatura': estatura,
-    'fum': fum.toIso8601String(),
-    'fechaEstimadaParto': fechaEstimadaParto.toIso8601String(),
-    'semanasGestacion': semanasGestacion,
-    'embarazoActual': embarazoActual,
-    'esPrimerEmbarazo': esPrimerEmbarazo,
-    'tipoEmbarazo': tipoEmbarazo,
-    'tieneAntecedentes': tieneAntecedentes,
-  };
+        'nombre': nombre,
+        'edad': edad,
+        'peso': peso,
+        'estatura': estatura,
+        'fum': fum.toIso8601String(),
+        'fechaEstimadaParto': fechaEstimadaParto.toIso8601String(),
+        'semanasGestacion': semanasGestacion,
+        'embarazoActual': embarazoActual,
+        'esPrimerEmbarazo': esPrimerEmbarazo,
+        'tipoEmbarazo': tipoEmbarazo,
+        'tieneAntecedentes': tieneAntecedentes,
+      };
+  factory Materna.fromJson(Map<String, dynamic> json) {
+    return Materna(
+      nombre: json['nombre'],
+      edad: json['edad'],
+      peso: (json['peso'] as num).toDouble(),
+      estatura: (json['estatura'] as num).toDouble(),
+      fum: DateTime.parse(json['fum']),
+      fechaEstimadaParto: DateTime.parse(json['fechaEstimadaParto']),
+      semanasGestacion: json['semanasGestacion'],
+      embarazoActual: json['embarazoActual'],
+      esPrimerEmbarazo: json['esPrimerEmbarazo'],
+      tipoEmbarazo: json['tipoEmbarazo'],
+      tieneAntecedentes: json['tieneAntecedentes'],
+    );
+  }
 }

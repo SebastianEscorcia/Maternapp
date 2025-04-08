@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart'; // Importa esto para inicializar locales
 import 'package:maternapp/core/appProvider/app_providers.dart';
 import 'package:maternapp/presentation/screens/questions/questions_screen.dart';
+import 'package:maternapp/presentation/screens/welcome/welcome_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:maternapp/Routes/routes.dart';
 import 'package:maternapp/presentation/screens/home/widgets/calendar/calendar_screen.dart';
@@ -31,11 +32,12 @@ class MyApp extends StatelessWidget {
          colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink[300] ?? Colors.pink),
       ),
       locale: const Locale('es', 'ES'),
-      initialRoute: Routes.questionScreen,
+      initialRoute: Routes.welcomeScreen,
       routes: {
         Routes.homeScreen: (context) => const HomeScreens(),
         Routes.calendarScreen: (context) => const CalendarScreen(),
         Routes.questionScreen: (conntext) => const QuestionScreen(),
+        Routes.welcomeScreen: (context) => const WelcomeScreen(),
       },
     );
   }

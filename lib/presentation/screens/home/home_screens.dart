@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maternapp/core/providers/maternal_provider.dart';
+import 'package:maternapp/presentation/global_widgets/texts/app_text.dart';
 import 'package:provider/provider.dart';
+import 'package:maternapp/presentation/layout/layout_scaffold.dart';
 import 'package:maternapp/presentation/screens/home/widgets/navbar/botton_navbar.dart';
 
 class HomeScreens extends StatelessWidget {
@@ -10,48 +12,55 @@ class HomeScreens extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final materna = Provider.of<MaternaProvider>(context).materna;
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('MaternApp'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Bienvenida a MaternApp 👶🏼',
-                  style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+
+    return LayoutScaffold(
+      bottomNav: const BottonNavbar(),
+      centerContent: true, // 👈 Activa el centrado vertical
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AppText(
+            text: '¡Hola ${materna?.nombre ?? 'mamá'}! 💖',
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.pink,
+            align: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          if (materna != null) ...[
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              elevation: 4,
+              color: Colors.pink[50],
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(text: 'Edad: ${materna.edad} años'),
+                    AppText(
+                        text:
+                            'Semanas de embarazo: ${materna.semanasGestacion == -1 ? 'Menos de una' : materna.semanasGestacion}'),
+                    AppText(
+                        text:
+                            'Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(materna.fechaEstimadaParto)}'),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              if (materna != null) ...[
-                Text('Nombre: ${materna.nombre}'),
-                Text('Edad: ${materna.edad} años'),
-                Text(' ${materna.semanasGestacion == -1 ? 'Semanas de embarazo: Menos de una' : 'Semanas de embarazo: ${materna.semanasGestacion}'} '),
-                Text('Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(materna.fechaEstimadaParto)}'),
-              ] else ...[
-                const Text('No se encontró información de la materna.'),
-              ],
-              const SizedBox(height: 30),
-              Image.asset(
-                'assets/images/maternapp.png',
-                width: 150,
-                height: 150,
-              ),
-            ],
+            ),
+          ] else ...[
+            const Text('No se encontró información de la materna.'),
+          ],
+          const SizedBox(height: 30),
+          Image.asset(
+            'assets/images/maternapp.png',
+            width: 180,
+            height: 180,
           ),
-        ),
+        ],
       ),
-      bottomNavigationBar: const BottonNavbar(),
     );
   }
 }

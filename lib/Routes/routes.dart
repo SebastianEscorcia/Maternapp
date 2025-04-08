@@ -4,4 +4,5 @@ class Routes {
   static const String registerScreen = '/register';
   static const String calendarScreen = '/calendarPregnancy';
   static const String questionScreen = '/questions';
+  static const String welcomeScreen = '/welcome';
 }
