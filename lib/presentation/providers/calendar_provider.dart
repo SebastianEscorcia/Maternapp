@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../data/models/calendar_model.dart';
 
 
-class CalendarController extends ChangeNotifier {
+class CalendarProvider extends ChangeNotifier {
   final CalendarModel model = CalendarModel(focusedDay: DateTime.now());
   final CalendarService _calendarService = CalendarService();
 

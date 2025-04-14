@@ -1,30 +1,35 @@
-import 'package:maternapp/core/providers/maternal_draft_provider.dart';
-import 'package:maternapp/core/providers/maternal_provider.dart';
-import 'package:maternapp/core/providers/next_or_previous_questions_provider.dart';
-import 'package:maternapp/domain/controllers/calendar_controller.dart';
-import 'package:maternapp/domain/controllers/maternal_controller.dart';
-import 'package:maternapp/domain/services/calendar_services.dart';
-import 'package:maternapp/domain/services/maternal_services.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-class AppProviders {
-  // SingleChildWidget para que puedas mezclar ChangeNotifierProvider y Provider en una sola lista
-  static List<SingleChildWidget> get obterProvider => [
-    ChangeNotifierProvider <MaternaDraftProvider>(create: (context) => MaternaDraftProvider()),
-    ChangeNotifierProvider <MaternaProvider>(create: (context) => MaternaProvider()), 
-    ChangeNotifierProvider <CalendarController>(create: (context) => CalendarController()),
-    ChangeNotifierProvider <NextOrPreviousQuestionsProvider>(create: (context)=> NextOrPreviousQuestionsProvider()),
-    
-    //SERVICIOS PUROS
-    Provider<CalendarService>(create: (_) => CalendarService()),
-    Provider<MaternalService>(create: (_) => MaternalService()),
+import '../../domain/services/calendar_services.dart';
+import '../../domain/services/maternal_services.dart';
+import '../../presentation/providers/calendar_provider.dart';
+import '../../presentation/providers/maternal_draft_provider.dart';
+import '../../presentation/providers/maternal_provider.dart';
+import '../../presentation/providers/next_or_previous_questions_provider.dart';
 
-    //CONTROLLADORES
-    Provider<MaternalController>(
-      create: (context) => MaternalController(
-        maternalService: Provider.of<MaternalService>(context, listen: false),
-      ),
-    ),
-  ];
+class AppProviders {
+  static List<SingleChildWidget> get obterProvider => [
+        // Servicios base
+        Provider<CalendarService>(create: (_) => CalendarService()),
+        Provider<MaternalService>(create: (_) => MaternalService()),
+
+        // Providers puros
+        ChangeNotifierProvider<MaternaDraftProvider>(
+          create: (_) => MaternaDraftProvider(),
+        ),
+        ChangeNotifierProvider<CalendarProvider>(
+          create: (_) => CalendarProvider(),
+        ),
+        ChangeNotifierProvider<NextOrPreviousQuestionsProvider>(
+          create: (_) => NextOrPreviousQuestionsProvider(),
+        ),
+
+        // ✅ ProxyProvider para inyectar MaternalService en MaternaProvider
+        ChangeNotifierProxyProvider<MaternalService, MaternaProvider>(
+          create: (_) => MaternaProvider(maternalService: MaternalService()), // valor temporal, será reemplazado abajo
+          update: (_, maternalService, previous) =>
+              MaternaProvider(maternalService: maternalService),
+        ),
+      ];
 }

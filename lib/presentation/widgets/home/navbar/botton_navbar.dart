@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:maternapp/presentation/screens/home/widgets/buttons/button_calendar.dart';
-import 'package:maternapp/presentation/screens/home/widgets/buttons/button_home.dart';
+import 'package:maternapp/presentation/widgets/home/buttons/button_calendar.dart';
+import 'package:maternapp/presentation/widgets/home/buttons/button_home.dart';
 
 class BottonNavbar extends StatelessWidget {
   const BottonNavbar({super.key});

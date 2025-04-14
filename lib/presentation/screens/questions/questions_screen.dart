@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/Routes/routes.dart';
-import 'package:maternapp/core/providers/next_or_previous_questions_provider.dart';
-import 'package:maternapp/core/providers/maternal_draft_provider.dart';
-import 'package:maternapp/core/providers/maternal_provider.dart';
-import 'package:maternapp/domain/controllers/calendar_controller.dart';
-import 'package:maternapp/domain/controllers/maternal_controller.dart';
-import 'package:maternapp/domain/controllers/questions_controller.dart';
+import 'package:maternapp/presentation/providers/next_or_previous_questions_provider.dart';
+import 'package:maternapp/presentation/providers/maternal_draft_provider.dart';
+import 'package:maternapp/presentation/providers/maternal_provider.dart';
+import 'package:maternapp/presentation/providers/calendar_provider.dart';
 import 'package:maternapp/domain/services/maternal_services.dart';
-import 'package:maternapp/domain/services/questions_services.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
-import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/dropdown_questions_card.dart';
-import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/input_question_card.dart';
-import 'package:maternapp/presentation/screens/questions/widgets/questions_before_login_or_register/yes_no_questions_card.dart';
-import 'package:maternapp/presentation/screens/home/widgets/calendar/custom_table_calendar.dart';
+import 'package:maternapp/presentation/widgets/questions_before_login_or_register/dropdown_questions_card.dart';
+import 'package:maternapp/presentation/widgets/questions_before_login_or_register/input_question_card.dart';
+import 'package:maternapp/presentation/widgets/questions_before_login_or_register/yes_no_questions_card.dart';
+import 'package:maternapp/presentation/widgets/home/calendar/custom_table_calendar.dart';
 import 'package:maternapp/core/utils/alerts/alerts.dart';
 import 'package:provider/provider.dart';
+
+import '../../../domain/services/questions_service.dart';
 
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen({super.key});
@@ -89,30 +88,33 @@ class QuestionScreen extends StatelessWidget {
       ];
 
   void onFinalizar(BuildContext context) {
-    final preguntaController = PreguntaController(
-      draftProvider: Provider.of<MaternaDraftProvider>(context, listen: false),
-      calendarController:
-          Provider.of<CalendarController>(context, listen: false),
-      preguntaService: QuestionsServices(),
-      maternaService: MaternalService(),
-      maternaController: MaternalController(maternalService: MaternalService()),
-      maternaProvider: Provider.of<MaternaProvider>(context, listen: false),
-    );
-    final error = preguntaController.validarFormulario();
-    if (error != null) {
-      mostrarAlerta(context, error);
-      return;
-    }
+  final draftProvider = Provider.of<MaternaDraftProvider>(context, listen: false);
+  final calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
+  final maternaProvider = Provider.of<MaternaProvider>(context, listen: false);
+  
+  final service = QuestionService(
+    draftProvider: draftProvider,
+    calendarProvider: calendarProvider,
+    maternaService: MaternalService(),
+    maternaProvider: maternaProvider,
+  );
 
-    try {
-      preguntaController.procesarFormulario();
-      Navigator.pushReplacementNamed(context, Routes.homeScreen);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error inesperado: ${e.toString()}")),
-      );
-    }
+  final error = service.validarFormulario();
+  if (error != null) {
+    mostrarAlerta(context, error);
+    return;
   }
+
+  try {
+    service.procesarFormulario();
+    Navigator.pushReplacementNamed(context, Routes.homeScreen);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error inesperado: ${e.toString()}")),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:maternapp/core/providers/maternal_provider.dart';
-import 'package:maternapp/presentation/global_widgets/texts/app_text.dart';
+import 'package:maternapp/presentation/providers/maternal_provider.dart';
+import 'package:maternapp/presentation/widgets/texts/app_text.dart';
 import 'package:provider/provider.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
-import 'package:maternapp/presentation/screens/home/widgets/navbar/botton_navbar.dart';
+import 'package:maternapp/presentation/widgets/home/navbar/botton_navbar.dart';
 
 class HomeScreens extends StatelessWidget {
   const HomeScreens({super.key});

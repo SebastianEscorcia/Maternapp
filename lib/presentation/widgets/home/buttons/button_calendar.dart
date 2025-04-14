@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maternapp/presentation/screens/home/widgets/calendar/calendar_screen.dart';
+import 'package:maternapp/presentation/widgets/home/calendar/calendar_screen.dart';
 
 class ButtonCalendar extends StatelessWidget {
   const ButtonCalendar({super.key});

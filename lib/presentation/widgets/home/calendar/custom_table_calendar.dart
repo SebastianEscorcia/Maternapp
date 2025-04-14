@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:maternapp/domain/controllers/calendar_controller.dart';
+import 'package:provider/provider.dart' show Provider;
 import 'package:table_calendar/table_calendar.dart';
-import 'package:provider/provider.dart';
-import 'package:maternapp/core/utils/calendar_logic.dart';
+
+
+
+import '../../../../core/utils/calendar_logic.dart';
+import '../../../providers/calendar_provider.dart';
 
 class CustomTableCalendar extends StatelessWidget {
   const CustomTableCalendar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<CalendarController>(context);
+    final calendarProvider = Provider.of<CalendarProvider>(context);
 
     return SingleChildScrollView(
       child: Column(
@@ -40,10 +43,10 @@ class CustomTableCalendar extends StatelessWidget {
               CalendarFormat.week: '2 Semanas',
             },
             firstDay: DateTime.utc(2024, 1, 1),
-            lastDay: controller.lastDayYear,
-            focusedDay: controller.focusedDay,
-            calendarFormat: controller.calendarFormat,
-            selectedDayPredicate: (day) => day == controller.selectedDay,
+            lastDay: calendarProvider.lastDayYear,
+            focusedDay: calendarProvider.focusedDay,
+            calendarFormat: calendarProvider.calendarFormat,
+            selectedDayPredicate: (day) => day == calendarProvider.selectedDay,
             onDaySelected: (selectedDay, focusedDay) {
               manejarSeleccionDeFecha(
                 context: context,
@@ -52,18 +55,18 @@ class CustomTableCalendar extends StatelessWidget {
               );
             },
             onFormatChanged: (format) {
-              controller.updateCalendarFormat(format);
+              calendarProvider.updateCalendarFormat(format);
             },
             onPageChanged: (focusedDay) {
-              controller.updateFocusedDay(focusedDay);
+              calendarProvider.updateFocusedDay(focusedDay);
             },
           ),
           const SizedBox(height: 20),
           Column(
             children: [
               Text(
-                controller.selectedDay != null && controller.weeksPregnant != 0
-                    ? "Última menstruación: ${DateFormat('dd MMMM yyyy', 'es_ES').format(controller.selectedDay!)}"
+                calendarProvider.selectedDay != null && calendarProvider.weeksPregnant != 0
+                    ? "Última menstruación: ${DateFormat('dd MMMM yyyy', 'es_ES').format(calendarProvider.selectedDay!)}"
                     : "Selecciona la fecha de tu última menstruación",
                 style: const TextStyle(
                   fontSize: 16,
@@ -72,19 +75,19 @@ class CustomTableCalendar extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                controller.weeksPregnant == -1
+                calendarProvider.weeksPregnant == -1
                     ? "Semanas de embarazo: Menos de una semana"
-                    : "Semanas de embarazo: ${controller.weeksPregnant}",
+                    : "Semanas de embarazo: ${calendarProvider.weeksPregnant}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: controller.weekColor,
+                  color: calendarProvider.weekColor,
                 ),
               ),
               const SizedBox(height: 10),
-              if (controller.dueDate != null)
+              if (calendarProvider.dueDate != null)
                 Text(
-                  "Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(controller.dueDate!)}",
+                  "Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(calendarProvider.dueDate!)}",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -93,7 +96,7 @@ class CustomTableCalendar extends StatelessWidget {
                 ),
               const SizedBox(height: 10),
               Text(
-                controller.trimesterMessage,
+                calendarProvider.trimesterMessage,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 16,

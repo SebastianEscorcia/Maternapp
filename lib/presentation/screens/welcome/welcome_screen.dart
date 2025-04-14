@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:maternapp/presentation/global_widgets/texts/app_text.dart';
+import 'package:maternapp/presentation/widgets/texts/app_text.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
-import 'package:maternapp/presentation/screens/welcome/widgets/started_button_welcome.dart';
+import 'package:maternapp/presentation/widgets/welcome/started_button_welcome.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -10,8 +10,8 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutScaffold(
-      title: "", // sin título, AppBar se verá pero limpio
-      centerContent: true, // 👈 centramos todo el contenido
+      title: "", 
+      centerContent: true, 
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
