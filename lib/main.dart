@@ -6,8 +6,11 @@ import 'package:maternapp/core/appProvider/app_providers.dart';
 import 'package:provider/provider.dart';
 import 'package:maternapp/Routes/routes.dart';
 
-// Screens 
+// Screens
 import 'presentation/layout/main_scaffold_navbar.dart';
+import 'presentation/providers/materna_edit_provider.dart';
+import 'presentation/providers/maternal_provider.dart';
+import 'presentation/screens/edit materna/edit_materna_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/questions/questions_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
@@ -49,6 +52,14 @@ class MyApp extends StatelessWidget {
         Routes.vitalsScreen: (context) => const VitalsScreen(),
         Routes.tipsScreen: (context) => const TipsScreen(),
         Routes.profileScreen: (context) => const ProfileScreen(),
+        Routes.editMaternaScreen: (context) {
+          final provider =
+              Provider.of<EditMaternaProvider>(context, listen: false);
+          final materna =
+              Provider.of<MaternaProvider>(context, listen: false).materna;
+          if (materna != null) provider.cargarDesdeMaterna(materna);
+          return const EditMaternaScreen();
+        }
       },
     );
   }

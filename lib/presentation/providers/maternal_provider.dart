@@ -12,8 +12,8 @@ class MaternaProvider with ChangeNotifier {
   /* MaternaProvider({required MaternalService maternalService}) {
     _maternalService = maternalService;
   }*/
- MaternaProvider({required MaternalService maternalService})
-    : _maternalService = maternalService; // Inyección del servicio 
+  MaternaProvider({required MaternalService maternalService})
+      : _maternalService = maternalService; // Inyección del servicio
   void setMaterna(Materna nueva) {
     _materna = nueva;
     notifyListeners();
@@ -30,5 +30,25 @@ class MaternaProvider with ChangeNotifier {
   }) {
     final materna = _maternalService.construirMaterna(draft, calendar);
     setMaterna(materna);
+  }
+
+  void actualizarDatos({required double peso, required double estatura}) {
+    if (_materna == null) return;
+
+    _materna = Materna(
+      nombre: _materna!.nombre,
+      edad: _materna!.edad,
+      peso: peso,
+      estatura: estatura,
+      fum: _materna!.fum,
+      fechaEstimadaParto: _materna!.fechaEstimadaParto,
+      semanasGestacion: _materna!.semanasGestacion,
+      embarazoActual: _materna!.embarazoActual,
+      esPrimerEmbarazo: _materna!.esPrimerEmbarazo,
+      tipoEmbarazo: _materna!.tipoEmbarazo,
+      tieneAntecedentes: _materna!.tieneAntecedentes,
+    );
+
+    notifyListeners();
   }
 }

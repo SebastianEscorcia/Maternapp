@@ -8,4 +8,5 @@ class Routes {
   static const String vitalsScreen = '/vitals';
   static const String tipsScreen = '/tips';
   static const String profileScreen = '/profile';
+  static const String editMaternaScreen = '/editMaterna';
 }
