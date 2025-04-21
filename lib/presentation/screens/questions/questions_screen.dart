@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/Routes/routes.dart';
-import 'package:maternapp/presentation/providers/next_or_previous_questions_provider.dart';
-import 'package:maternapp/presentation/providers/maternal_draft_provider.dart';
-import 'package:maternapp/presentation/providers/maternal_provider.dart';
-import 'package:maternapp/presentation/providers/calendar_provider.dart';
-import 'package:maternapp/domain/services/maternal_services.dart';
-import 'package:maternapp/presentation/layout/layout_scaffold.dart';
-import 'package:maternapp/presentation/widgets/questions_before_login_or_register/dropdown_questions_card.dart';
-import 'package:maternapp/presentation/widgets/questions_before_login_or_register/input_question_card.dart';
-import 'package:maternapp/presentation/widgets/questions_before_login_or_register/yes_no_questions_card.dart';
-import 'package:maternapp/presentation/widgets/home/calendar/custom_table_calendar.dart';
-import 'package:maternapp/core/utils/alerts/alerts.dart';
 import 'package:provider/provider.dart';
 
+// Alerts
+import '../../../core/utils/alerts/alerts.dart';
+//Services
+import '../../../domain/services/maternal_services.dart';
 import '../../../domain/services/questions_service.dart';
+import '../../layout/layout_scaffold.dart';
+//Providers
+import '../../providers/calendar_provider.dart';
+import '../../providers/maternal_draft_provider.dart';
+import '../../providers/maternal_provider.dart';
+import '../../providers/next_or_previous_questions_provider.dart';
+
+// Widgets
+import '../../widgets/home/calendar/custom_table_calendar.dart';
+import '../../widgets/questions_before_login_or_register/dropdown_questions_card.dart';
+import '../../widgets/questions_before_login_or_register/input_question_card.dart';
+import '../../widgets/questions_before_login_or_register/number_picker_questions_card.dart';
+import '../../widgets/questions_before_login_or_register/year_picker_question_card.dart';
+import '../../widgets/questions_before_login_or_register/yes_no_questions_card.dart';
 
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen({super.key});
@@ -27,31 +34,30 @@ class QuestionScreen extends StatelessWidget {
           onChanged: (val) => draftProviderMaterna.updateNombre(val),
           icon: Icons.person,
         ),
-        InputQuestionCard(
-          questionText: "¿Cuál es tu edad?",
-          hintText: "Ej: 26",
-          inputType: TextInputType.number,
-          initialValue: draftProviderMaterna.draft.edad?.toString(),
-          onChanged: (val) =>
-              draftProviderMaterna.updateEdad(int.tryParse(val) ?? 0),
+        YearPickerQuestionCard(
+          questionText: "¿Cuándo naciste?",
+          selectedYear: draftProviderMaterna.draft.anioNacimiento,
+          onChanged: (year) => draftProviderMaterna.updateAnioNacimiento(year),
           icon: Icons.cake,
         ),
-        InputQuestionCard(
-          questionText: "¿Cuál es tu peso en kg?",
-          hintText: "Ej: 70",
-          inputType: TextInputType.number,
-          initialValue: draftProviderMaterna.draft.peso?.toString(),
-          onChanged: (val) =>
-              draftProviderMaterna.updatePeso(double.tryParse(val) ?? 0),
-          icon: Icons.monitor_weight, // 👈 ícono representativo
+        NumberPickerQuestionCard(
+          questionText: "¿Cuál es tu peso?",
+          selectedValue: draftProviderMaterna.draft.peso?.round(),
+          minValue: 30,
+          maxValue: 150,
+          unit: "kg",
+          onChanged: (val) => draftProviderMaterna.updatePeso(val.toDouble()),
+          icon: Icons.monitor_weight,
         ),
-        InputQuestionCard(
-          questionText: "¿Cuál es tu estatura en metros?",
-          hintText: "Ej: 1.60",
-          inputType: TextInputType.number,
-          initialValue: draftProviderMaterna.draft.estatura?.toString(),
-          onChanged: (val) =>
-              draftProviderMaterna.updateEstatura(double.tryParse(val) ?? 0),
+        NumberPickerQuestionCard(
+          questionText: "¿Cuál es tu estatura?",
+          selectedValue: draftProviderMaterna.draft.estatura != null
+              ? (draftProviderMaterna.draft.estatura! * 100).round()
+              : null,
+          minValue: 120,
+          maxValue: 200,
+          unit: "cm",
+          onChanged: (val) => draftProviderMaterna.updateEstatura(val / 100),
           icon: Icons.height,
         ),
         YesNoQuestionCard(
@@ -68,6 +74,7 @@ class QuestionScreen extends StatelessWidget {
           onChanged: (val) {
             if (val != null) draftProviderMaterna.updateEsPrimerEmbarazo(val);
           },
+          icon: Icons.pregnant_woman,
         ),
         DropdownQuestionCard(
           questionText: "¿Tu embarazo es único o múltiple?",
@@ -88,33 +95,35 @@ class QuestionScreen extends StatelessWidget {
       ];
 
   void onFinalizar(BuildContext context) {
-  final draftProvider = Provider.of<MaternaDraftProvider>(context, listen: false);
-  final calendarProvider = Provider.of<CalendarProvider>(context, listen: false);
-  final maternaProvider = Provider.of<MaternaProvider>(context, listen: false);
-  
-  final service = QuestionService(
-    draftProvider: draftProvider,
-    calendarProvider: calendarProvider,
-    maternaService: MaternalService(),
-    maternaProvider: maternaProvider,
-  );
+    final draftProvider =
+        Provider.of<MaternaDraftProvider>(context, listen: false);
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
+    final maternaProvider =
+        Provider.of<MaternaProvider>(context, listen: false);
 
-  final error = service.validarFormulario();
-  if (error != null) {
-    mostrarAlerta(context, error);
-    return;
-  }
-
-  try {
-    service.procesarFormulario();
-    Navigator.pushReplacementNamed(context, Routes.homeScreen);
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error inesperado: ${e.toString()}")),
+    final service = QuestionService(
+      draftProvider: draftProvider,
+      calendarProvider: calendarProvider,
+      maternaService: MaternalService(),
+      maternaProvider: maternaProvider,
     );
-  }
-}
 
+    final error = service.validarFormulario();
+    if (error != null) {
+      mostrarAlerta(context, error);
+      return;
+    }
+
+    try {
+      service.procesarFormulario();
+      Navigator.pushReplacementNamed(context, Routes.homeScreen);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error inesperado: ${e.toString()}")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

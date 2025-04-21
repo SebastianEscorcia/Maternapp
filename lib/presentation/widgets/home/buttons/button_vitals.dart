@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class ButtonHome extends StatelessWidget {
-  final bool isActive;
+class ButtonVitals extends StatelessWidget {
   final VoidCallback onPressed;
+  final bool isActive;
 
-  const ButtonHome({
+  const ButtonVitals({
     super.key,
-    required this.isActive,
     required this.onPressed,
+    this.isActive = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = isActive ? Colors.pink : Colors.grey;
+
     return GestureDetector(
       onTap: onPressed,
       behavior: HitTestBehavior.opaque,
@@ -19,16 +21,16 @@ class ButtonHome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.home_outlined,
-            color: isActive ? Colors.pink : Colors.grey,
+            Icons.monitor_heart_outlined,
+            color: color,
             size: 24,
           ),
           const SizedBox(height: 4),
           Text(
-            'Inicio',
+            'Vitales',
             style: TextStyle(
               fontSize: 12,
-              color: isActive ? Colors.pink : Colors.grey,
+              color: color,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),

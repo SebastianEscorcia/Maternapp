@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class YesNoQuestionCard extends StatelessWidget {
   final String questionText;
   final bool? initialValue;
-  final ValueChanged<bool?> onChanged;
-  final IconData? icon; // 👈 ícono opcional
+  final Function(bool?) onChanged;
+  final IconData? icon;
 
   const YesNoQuestionCard({
     super.key,
@@ -17,46 +16,41 @@ class YesNoQuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      color: Colors.pink[50],
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(icon, size: 32, color: Colors.pink[300]),
-              ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(questionText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  RadioListTile<bool>(
-                    title: const Text('Sí'),
-                    value: true,
-                    groupValue: initialValue,
-                    onChanged: onChanged,
-                    dense: true,
-                  ),
-                  RadioListTile<bool>(
-                    title: const Text('No'),
-                    value: false,
-                    groupValue: initialValue,
-                    onChanged: onChanged,
-                    dense: true,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
       ),
-    ).animate().fadeIn(duration: 400.ms).moveY(begin: 30);
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (icon != null) Icon(icon, size: 28, color: Colors.pink),
+          const SizedBox(height: 10),
+          Text(
+            questionText,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ChoiceChip(
+                label: const Text("Sí"),
+                selected: initialValue == true,
+                selectedColor: Colors.pink[200],
+                onSelected: (_) => onChanged(true),
+              ),
+              ChoiceChip(
+                label: const Text("No"),
+                selected: initialValue == false,
+                selectedColor: Colors.pink[200],
+                onSelected: (_) => onChanged(false),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

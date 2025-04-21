@@ -5,4 +5,7 @@ class Routes {
   static const String calendarScreen = '/calendarPregnancy';
   static const String questionScreen = '/questions';
   static const String welcomeScreen = '/welcome';
+  static const String vitalsScreen = '/vitals';
+  static const String tipsScreen = '/tips';
+  static const String profileScreen = '/profile';
 }

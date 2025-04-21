@@ -1,62 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class DropdownQuestionCard extends StatelessWidget {
   final String questionText;
   final List<String> options;
   final String? selectedValue;
   final ValueChanged<String?> onChanged;
-  final IconData? icon; // 👈 ícono opcional
+  final IconData? icon;
 
   const DropdownQuestionCard({
+    super.key,
     required this.questionText,
     required this.options,
+    required this.selectedValue,
     required this.onChanged,
-    this.selectedValue,
     this.icon,
-    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      color: Colors.pink[50],
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(icon, size: 32, color: Colors.pink[300]),
-              ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(questionText, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: selectedValue,
-                    decoration: InputDecoration(
-                      hintText: "Selecciona una opción",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    items: options.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-                    onChanged: onChanged,
-                  ),
-                ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (icon != null) Icon(icon, size: 28, color: Colors.pink),
+          const SizedBox(height: 10),
+          Text(
+            questionText,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 20),
+          DropdownButtonFormField<String>(
+            value: selectedValue,
+            items: options.map((String option) {
+              return DropdownMenuItem<String>(
+                value: option,
+                child: Text(option),
+              );
+            }).toList(),
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Color(0xFFFFF1F5),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    ).animate().fadeIn(duration: 400.ms).moveY(begin: 30);
+    );
   }
 }

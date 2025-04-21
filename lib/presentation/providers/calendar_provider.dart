@@ -7,7 +7,7 @@ import '../../data/models/calendar_model.dart';
 class CalendarProvider extends ChangeNotifier {
   final CalendarModel model = CalendarModel(focusedDay: DateTime.now());
   final CalendarService _calendarService = CalendarService();
-
+  
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   CalendarFormat get calendarFormat => _calendarFormat;

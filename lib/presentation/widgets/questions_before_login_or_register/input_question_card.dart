@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class InputQuestionCard extends StatelessWidget {
   final String questionText;
@@ -7,7 +6,7 @@ class InputQuestionCard extends StatelessWidget {
   final TextInputType inputType;
   final String? initialValue;
   final ValueChanged<String> onChanged;
-  final IconData? icon; // 👈 ícono opcional
+  final IconData? icon;
 
   const InputQuestionCard({
     super.key,
@@ -21,49 +20,47 @@ class InputQuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      color: Colors.pink[50],
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(icon, size: 32, color: Colors.pink[300]),
-              ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    questionText,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (icon != null) Icon(icon, size: 28, color: Colors.pink),
+          const SizedBox(height: 10),
+          Text(
+            questionText,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 14),
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: TextFormField(
+                initialValue: initialValue,
+                keyboardType: inputType,
+                onChanged: onChanged,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  filled: true,
+                  fillColor: const Color(0xFFFFF1F5),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
                   ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    initialValue: initialValue,
-                    keyboardType: inputType,
-                    decoration: InputDecoration(
-                      hintText: hintText,
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onChanged: onChanged,
-                  ),
-                ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    ).animate().fadeIn(duration: 400.ms).moveY(begin: 30);
+    );
   }
 }

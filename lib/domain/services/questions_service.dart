@@ -22,13 +22,21 @@ class QuestionService {
 
     if (draft.nombre == null || draft.nombre!.isEmpty)
       return "Por favor, ingresa tu nombre.";
-    if (draft.edad == null || draft.edad! <= 0)
-      return "Por favor, ingresa una edad válida.";
-    if (draft.edad! <= 10) return "Estás muy pequeña para quedar embarazada.";
-    if (draft.peso == null || draft.peso! <= 0)
-      return "Por favor, ingresa tu peso.";
-    if (draft.estatura == null || draft.estatura! <= 0)
-      return "Por favor, ingresa tu estatura.";
+    if (draft.anioNacimiento == null)
+      return "Por favor, selecciona tu año de nacimiento.";
+
+    final edadCalculada = DateTime.now().year - draft.anioNacimiento!;
+    if (edadCalculada <= 0) return "La edad no es válida.";
+    if (edadCalculada <= 10) return "Estás muy pequeña para quedar embarazada.";
+
+    if (draft.peso == null || draft.peso! < 30 || draft.peso! > 150)
+
+      return "El peso debe estar entre 30 y 150 kg.";
+    if (draft.estatura == null ||
+        draft.estatura! < 1.20 ||
+        draft.estatura! > 2.00)
+      return "La estatura debe estar entre 1.20 m y 2.00 m.";
+      
     if (calendar.selectedDay == null)
       return "Selecciona la fecha de tu última menstruación.";
     if (calendar.dueDate == null || calendar.weeksPregnant == 0)

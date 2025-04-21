@@ -17,9 +17,7 @@ class StartedButtonWelcome extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
         ),
       ),
-      onPressed: () {
-        Navigator.pushReplacementNamed(context, Routes.questionScreen);
-      },
+      onPressed: () =>  Navigator.pushReplacementNamed(context, Routes.questionScreen),
       child: const Text("Comenzar"),
     );
   }

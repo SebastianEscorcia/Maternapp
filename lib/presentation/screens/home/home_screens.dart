@@ -4,7 +4,6 @@ import 'package:maternapp/presentation/providers/maternal_provider.dart';
 import 'package:maternapp/presentation/widgets/texts/app_text.dart';
 import 'package:provider/provider.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
-import 'package:maternapp/presentation/widgets/home/navbar/botton_navbar.dart';
 
 class HomeScreens extends StatelessWidget {
   const HomeScreens({super.key});
@@ -14,7 +13,6 @@ class HomeScreens extends StatelessWidget {
     final materna = Provider.of<MaternaProvider>(context).materna;
 
     return LayoutScaffold(
-      bottomNav: const BottonNavbar(),
       centerContent: true, // 👈 Activa el centrado vertical
       child: Column(
         mainAxisSize: MainAxisSize.min,

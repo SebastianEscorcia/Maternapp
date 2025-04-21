@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class ButtonHome extends StatelessWidget {
+class ButtonTips extends StatelessWidget {
   final bool isActive;
   final VoidCallback onPressed;
 
-  const ButtonHome({
+  const ButtonTips({
     super.key,
     required this.isActive,
     required this.onPressed,
@@ -19,13 +19,13 @@ class ButtonHome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.home_outlined,
+            Icons.lightbulb_outline,
             color: isActive ? Colors.pink : Colors.grey,
             size: 24,
           ),
           const SizedBox(height: 4),
           Text(
-            'Inicio',
+            'Consejos',
             style: TextStyle(
               fontSize: 12,
               color: isActive ? Colors.pink : Colors.grey,

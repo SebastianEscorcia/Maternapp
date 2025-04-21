@@ -10,8 +10,8 @@ class MaternaDraftProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateEdad(int edad) {
-    _draft.edad = edad;
+  void updateAnioNacimiento(int year) {
+    _draft.anioNacimiento = year;
     notifyListeners();
   }
 

@@ -6,7 +6,7 @@ class MaternalService {
   Materna construirMaterna(MaternaDraft draft, CalendarModel calendar) {
     return Materna(
       nombre: draft.nombre!,
-      edad: draft.edad!,
+      edad: DateTime.now().year - draft.anioNacimiento!,
       peso: draft.peso!,
       estatura: draft.estatura!,
       fum: calendar.selectedDay!,

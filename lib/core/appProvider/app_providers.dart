@@ -6,6 +6,7 @@ import '../../domain/services/maternal_services.dart';
 import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
+import '../../presentation/providers/navigation_navbar_provider.dart';
 import '../../presentation/providers/next_or_previous_questions_provider.dart';
 
 class AppProviders {
@@ -24,7 +25,9 @@ class AppProviders {
         ChangeNotifierProvider<NextOrPreviousQuestionsProvider>(
           create: (_) => NextOrPreviousQuestionsProvider(),
         ),
-
+         ChangeNotifierProvider(create: (_) => NavigationNavbarProvider()),
+    
+    
         // ✅ ProxyProvider para inyectar MaternalService en MaternaProvider
         ChangeNotifierProxyProvider<MaternalService, MaternaProvider>(
           create: (_) => MaternaProvider(maternalService: MaternalService()), // valor temporal, será reemplazado abajo

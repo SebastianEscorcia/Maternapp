@@ -1,28 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:maternapp/presentation/widgets/home/calendar/calendar_screen.dart';
 
 class ButtonCalendar extends StatelessWidget {
-  const ButtonCalendar({super.key});
+  final bool isActive;
+  final VoidCallback onPressed;
+
+  const ButtonCalendar({
+    super.key,
+    required this.isActive,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CalendarScreen()));
-          },
-          style: ElevatedButton.styleFrom(
-            iconColor: Colors.pink[300],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+    return GestureDetector(
+      onTap: onPressed,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.calendar_month_outlined,
+            color: isActive ? Colors.pink : Colors.grey,
+            size: 24,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Calendario',
+            style: TextStyle(
+              fontSize: 12,
+              color: isActive ? Colors.pink : Colors.grey,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
-          child: Icon(Icons.calendar_month, size: 20),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

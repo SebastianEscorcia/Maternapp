@@ -1,6 +1,6 @@
 class MaternaDraft {
   String? nombre;
-  int? edad;
+  int? anioNacimiento;
   double? peso;
   double? estatura;
   bool? embarazoActual;

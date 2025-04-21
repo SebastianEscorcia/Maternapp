@@ -3,8 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart' show Provider;
 import 'package:table_calendar/table_calendar.dart';
 
-
-
 import '../../../../core/utils/calendar_logic.dart';
 import '../../../providers/calendar_provider.dart';
 
@@ -19,12 +17,13 @@ class CustomTableCalendar extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            "Selecciona una fecha",
+            "Selecciona la fecha de tu ultimo periodo",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           TableCalendar(
             locale: 'es_ES',
+            key: ValueKey('${calendarProvider.focusedDay}-${calendarProvider.calendarFormat}'),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
                 color: Colors.pink[200],
@@ -65,7 +64,8 @@ class CustomTableCalendar extends StatelessWidget {
           Column(
             children: [
               Text(
-                calendarProvider.selectedDay != null && calendarProvider.weeksPregnant != 0
+                calendarProvider.selectedDay != null &&
+                        calendarProvider.weeksPregnant != 0
                     ? "Última menstruación: ${DateFormat('dd MMMM yyyy', 'es_ES').format(calendarProvider.selectedDay!)}"
                     : "Selecciona la fecha de tu última menstruación",
                 style: const TextStyle(
