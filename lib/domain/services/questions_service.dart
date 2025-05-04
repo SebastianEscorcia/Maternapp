@@ -1,8 +1,7 @@
-import 'package:maternapp/domain/services/maternal_services.dart';
-
-import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
+import '../../presentation/providers/calendar_provider.dart';
+import 'maternal_services.dart';
 
 class QuestionService {
   final MaternaDraftProvider draftProvider;
@@ -46,20 +45,23 @@ class QuestionService {
   }
 
   void procesarFormulario() {
-    calendarProvider.model.maternaId = draftProvider.draft.uId ?? '';
     final materna = maternaService.construirMaterna(
       draftProvider.draft,
       calendarProvider.model,
     );
+    print(materna.nombre);
     maternaProvider.setMaterna(materna);
   }
 
   Future<void> guardarMaternaYCalendario() async {
     final draft = draftProvider.draft;
+    final calendar = calendarProvider.model;
 
     await maternaProvider.crearOActualizarMaternaFirebase(draft);
 
-    calendarProvider.model.maternaId = draft.uId!;
+    calendar.maternaId = draft.uId!;
+
     await calendarProvider.crearCalendarioFirebase();
+
   }
 }
