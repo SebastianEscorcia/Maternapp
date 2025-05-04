@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "152262287769",
+    "project_id": "maternapp-bcb04",
+    "storage_bucket": "maternapp-bcb04.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152262287769:android:94fd2b705460b0cd9bb308",
+        "android_client_info": {
+          "package_name": "com.example.maternapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "152262287769-n8jk20j85jclchtjurgrslaopmq7t708.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5GTyOpQAcvrifw1gWL54mDCKVHkK4-d0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "152262287769-n8jk20j85jclchtjurgrslaopmq7t708.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "152262287769-8ghsftp39cbsnqd3ja16aoctlgvc40g4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maternapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

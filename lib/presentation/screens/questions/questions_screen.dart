@@ -94,7 +94,7 @@ class QuestionScreen extends StatelessWidget {
         const CustomTableCalendar(),
       ];
 
-  void onFinalizar(BuildContext context) {
+  void onFinalizar(BuildContext context)async {
     final draftProvider =
         Provider.of<MaternaDraftProvider>(context, listen: false);
     final calendarProvider =
@@ -117,6 +117,7 @@ class QuestionScreen extends StatelessWidget {
 
     try {
       service.procesarFormulario();
+      await service.guardarMaternaYCalendario();
       Navigator.pushReplacementNamed(context, Routes.homeScreen);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

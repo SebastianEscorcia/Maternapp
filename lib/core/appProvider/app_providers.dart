@@ -1,8 +1,10 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+import '../../domain/services/Firebase/auth_services.dart';
 import '../../domain/services/calendar_services.dart';
 import '../../domain/services/maternal_services.dart';
+import '../../presentation/providers/Auth/auth_provider.dart';
 import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/materna_edit_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
@@ -35,5 +37,8 @@ class AppProviders {
           update: (_, maternalService, previous) =>
               MaternaProvider(maternalService: maternalService),
         ),
+
+        //Firebase 
+        ChangeNotifierProvider(create: (_) => AuthProvider(AuthServices())),
       ];
 }

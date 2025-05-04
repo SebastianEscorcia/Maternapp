@@ -8,4 +8,9 @@ class MaternaDraft {
   String? tipoEmbarazo;
   bool? tieneAntecedentes;
   DateTime? fum;
+  String? uId;
+  String? calendarId;
+
+
+  
 }

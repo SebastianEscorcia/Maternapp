@@ -32,6 +32,7 @@ class EditMaternaProvider with ChangeNotifier {
         esPrimerEmbarazo: materna.esPrimerEmbarazo,
         tipoEmbarazo: materna.tipoEmbarazo,
         tieneAntecedentes: materna.tieneAntecedentes,
+        uid: materna.uid
       ));
 
       ScaffoldMessenger.of(context).showSnackBar(

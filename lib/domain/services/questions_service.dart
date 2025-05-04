@@ -1,7 +1,8 @@
+import 'package:maternapp/domain/services/maternal_services.dart';
+
+import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
-import '../../presentation/providers/calendar_provider.dart';
-import 'maternal_services.dart';
 
 class QuestionService {
   final MaternaDraftProvider draftProvider;
@@ -30,13 +31,12 @@ class QuestionService {
     if (edadCalculada <= 10) return "Estás muy pequeña para quedar embarazada.";
 
     if (draft.peso == null || draft.peso! < 30 || draft.peso! > 150)
-
       return "El peso debe estar entre 30 y 150 kg.";
     if (draft.estatura == null ||
         draft.estatura! < 1.20 ||
         draft.estatura! > 2.00)
       return "La estatura debe estar entre 1.20 m y 2.00 m.";
-      
+
     if (calendar.selectedDay == null)
       return "Selecciona la fecha de tu última menstruación.";
     if (calendar.dueDate == null || calendar.weeksPregnant == 0)
@@ -46,11 +46,20 @@ class QuestionService {
   }
 
   void procesarFormulario() {
+    calendarProvider.model.maternaId = draftProvider.draft.uId ?? '';
     final materna = maternaService.construirMaterna(
       draftProvider.draft,
       calendarProvider.model,
     );
-    print(materna.nombre);
     maternaProvider.setMaterna(materna);
+  }
+
+  Future<void> guardarMaternaYCalendario() async {
+    final draft = draftProvider.draft;
+
+    await maternaProvider.crearOActualizarMaternaFirebase(draft);
+
+    calendarProvider.model.maternaId = draft.uId!;
+    await calendarProvider.crearCalendarioFirebase();
   }
 }

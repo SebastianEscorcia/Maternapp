@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../layout/layout_scaffold.dart';
+import '../../providers/Auth/auth_provider.dart';
+import '../../providers/maternal_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool isLoggedIn = false; // Aquí validarás si hay sesión
+    final authProvider = Provider.of<AuthProvider>(context);
+    final bool isLoggedIn = authProvider.user != null;
+    final bool needProfileCompletion = authProvider.needsProfileCompletion;
 
     return LayoutScaffold(
       title: "Mi perfil 👤",
@@ -17,7 +22,7 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// 🔐 Alerta si no ha iniciado sesión
-            if (!isLoggedIn)
+            if (!isLoggedIn || needProfileCompletion)
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 16),
@@ -36,15 +41,43 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        // TODO: Abrir flujo Firebase Login
+                      onPressed: () async {
+                        final user = await authProvider.signInWithGoogle();
+                        if (user != null) {
+                          await authProvider.migrarMaternaSiExiste(
+                            maternaProvider: Provider.of<MaternaProvider>(
+                                context,
+                                listen: false),
+                          );
+
+                          // Mostrar snackbar de éxito
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('✅ Sesión iniciada correctamente'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        } else if (authProvider.userCancelledLogin) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('❗ Inicio de sesión cancelado'),
+                            ),
+                          );
+                        } else if (authProvider.errorMesagge?.isNotEmpty ==
+                            true) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('❌ ${authProvider.errorMesagge}'),
+                            ),
+                          );
+                        }
                       },
                       child: const Text("Iniciar sesión"),
                     ),
                   ],
                 ),
               ),
-      
+
             ListTile(
               leading: const Icon(Icons.person_outline, color: Colors.pink),
               title: const Text("Mis datos"),

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart'; // Importa esto para inicializar locales
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:maternapp/core/appProvider/app_providers.dart';
+
+//Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'package:maternapp/firebase_options.dart';
 
 // Provider and Routes
 import 'package:provider/provider.dart';
@@ -16,12 +21,19 @@ import 'presentation/screens/questions/questions_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
 import 'presentation/screens/vitals/vitals_screen.dart';
 import 'presentation/screens/welcome/welcome_screen.dart';
+import 'presentation/screens/wrapper/wrapper_screen.dart';
 import 'presentation/widgets/home/calendar/calendar_screen.dart';
 
+//Navigator key global para el auth provider
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Asegúrate de inicializar el binding
+  await dotenv.load(fileName: 'config/.env');
   await initializeDateFormatting('es_ES', null);
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(
     MultiProvider(
       providers: AppProviders.obterProvider,
@@ -43,8 +55,9 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Colors.pink[300] ?? Colors.pink),
       ),
       locale: const Locale('es', 'ES'),
-      initialRoute: Routes.welcomeScreen,
+      initialRoute: Routes.wrapperScreen,
       routes: {
+        Routes.wrapperScreen: (context) => const WrapperScreen(),
         Routes.homeScreen: (context) => const MainScaffoldNavbar(),
         Routes.calendarScreen: (context) => const CalendarScreen(),
         Routes.questionScreen: (conntext) => const QuestionScreen(),
