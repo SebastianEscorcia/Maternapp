@@ -57,11 +57,14 @@ class QuestionService {
     final draft = draftProvider.draft;
     final calendar = calendarProvider.model;
 
-    await maternaProvider.crearOActualizarMaternaFirebase(draft);
+    // Guardar materna y obtener el UID
+    final maternaId =
+        await maternaProvider.crearOActualizarMaternaFirebase(draft);
 
-    calendar.maternaId = draft.uId!;
+    // Cargar la materna recién creada
+    await maternaProvider.cargarMaternaFirebase(maternaId);
 
+    calendar.maternaId = maternaId;
     await calendarProvider.crearCalendarioFirebase();
-
   }
 }

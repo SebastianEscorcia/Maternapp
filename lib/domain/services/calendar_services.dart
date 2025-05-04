@@ -6,6 +6,7 @@ class CalendarService {
   final String calendarCollection = 'calendars';
   final String maternasCollection = 'maternas';
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+
   Future<void> crearCalendarioFirebase(CalendarModel calendar) async {
     final calendarRef =
         _firestore.collection(calendarCollection).doc(calendar.uId);
@@ -37,6 +38,8 @@ class CalendarService {
 
     await batch.commit();
   }
+
+  
   
 
   void calcularDetalles(CalendarModel model) {

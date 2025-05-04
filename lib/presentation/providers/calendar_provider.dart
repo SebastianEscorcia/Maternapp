@@ -37,6 +37,7 @@ class CalendarProvider extends ChangeNotifier {
     await _calendarService.crearCalendarioFirebase(model);
   }
 
+  
   void updateCalendarFormat(CalendarFormat format) {
     _calendarFormat = format;
     notifyListeners();

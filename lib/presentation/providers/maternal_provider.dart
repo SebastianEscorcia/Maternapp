@@ -75,7 +75,7 @@ class MaternaProvider with ChangeNotifier {
     }
   }
 
-  Future<void> crearOActualizarMaternaFirebase(MaternaDraft draft) async {
+  Future<String> crearOActualizarMaternaFirebase(MaternaDraft draft) async {
     _isLoading = true;
     notifyListeners();
     try {
@@ -83,15 +83,17 @@ class MaternaProvider with ChangeNotifier {
         final existe = await _maternalService.obternerMaterna(draft.uId!);
         if (existe != null) {
           await _maternalService.actualizarMaternaFirebase(draft);
-          return;
+          return draft.uId!;
         }
       }
 
       final newUid = await _maternalService.crearMaternaFirebase(draft);
       draft.uId = newUid;
+      return newUid;
     } catch (e) {
       _error = 'Error al guardar la materna $e';
       if (kDebugMode) print(_error);
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
