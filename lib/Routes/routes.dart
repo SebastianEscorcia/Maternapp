@@ -1,5 +1,5 @@
 class Routes {
-  static const String wrapperScreen = '/'; 
+  static const splashScreen = '/';
   static const String homeScreen = '/home';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
@@ -10,4 +10,5 @@ class Routes {
   static const String tipsScreen = '/tips';
   static const String profileScreen = '/profile';
   static const String editMaternaScreen = '/editMaterna';
+  static const String mainScaffoldNavbar = 'nav';
 }

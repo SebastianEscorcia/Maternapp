@@ -4,6 +4,7 @@ import 'package:provider/single_child_widget.dart';
 import '../../domain/services/Firebase/auth_services.dart';
 import '../../domain/services/calendar_services.dart';
 import '../../domain/services/maternal_services.dart';
+import '../../domain/services/questions_service.dart';
 import '../../presentation/providers/Auth/auth_provider.dart';
 import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/materna_edit_provider.dart';
@@ -19,26 +20,39 @@ class AppProviders {
         Provider<MaternalService>(create: (_) => MaternalService()),
 
         // Providers puros
-        ChangeNotifierProvider<MaternaDraftProvider>(
-          create: (_) => MaternaDraftProvider(),
-        ),
-        ChangeNotifierProvider<CalendarProvider>(
-          create: (_) => CalendarProvider(),
-        ),
-        ChangeNotifierProvider<NextOrPreviousQuestionsProvider>(
-          create: (_) => NextOrPreviousQuestionsProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => MaternaDraftProvider()),
+        ChangeNotifierProvider(create: (_) => CalendarProvider()),
+        ChangeNotifierProvider(
+            create: (_) => NextOrPreviousQuestionsProvider()),
         ChangeNotifierProvider(create: (_) => NavigationNavbarProvider()),
         ChangeNotifierProvider(create: (_) => EditMaternaProvider()),
 
-        // ✅ ProxyProvider para inyectar MaternalService en MaternaProvider
-        ChangeNotifierProxyProvider<MaternalService, MaternaProvider>(
-          create: (_) => MaternaProvider(maternalService: MaternalService()), // valor temporal, será reemplazado abajo
-          update: (_, maternalService, previous) =>
-              MaternaProvider(maternalService: maternalService),
+        ChangeNotifierProxyProvider2<MaternalService, CalendarService,
+            MaternaProvider>(
+          create: (_) => MaternaProvider(
+            maternalService: MaternalService(),
+            calendarService: CalendarService(),
+          ),
+          update: (_, maternalService, calendarService, __) => MaternaProvider(
+              maternalService: maternalService,
+              calendarService: calendarService),
         ),
 
-        //Firebase 
+        // ✅ Después puedes inyectar QuestionService que depende de los anteriores
+        ProxyProvider5<MaternaDraftProvider, CalendarProvider, MaternaProvider,
+            CalendarService, MaternalService, QuestionService>(
+          update: (_, draftProvider, calendarProvider, maternaProvider,
+                  calendarService, maternalService, __) =>
+              QuestionService(
+            draftProvider: draftProvider,
+            calendarProvider: calendarProvider,
+            maternaProvider: maternaProvider,
+            calendarService: calendarService,
+            maternalService: maternalService,
+          ),
+        ),
+
+        // Firebase Auth
         ChangeNotifierProvider(create: (_) => AuthProvider(AuthServices())),
       ];
 }

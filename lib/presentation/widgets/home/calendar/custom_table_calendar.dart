@@ -5,6 +5,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../core/utils/calendar_logic.dart';
 import '../../../providers/calendar_provider.dart';
+import '../../../providers/maternal_draft_provider.dart';
+import '../../../providers/maternal_provider.dart';
 
 class CustomTableCalendar extends StatelessWidget {
   const CustomTableCalendar({super.key});
@@ -23,7 +25,8 @@ class CustomTableCalendar extends StatelessWidget {
           const SizedBox(height: 10),
           TableCalendar(
             locale: 'es_ES',
-            key: ValueKey('${calendarProvider.focusedDay}-${calendarProvider.calendarFormat}'),
+            key: ValueKey(
+                '${calendarProvider.focusedDay}-${calendarProvider.calendarFormat}'),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
                 color: Colors.pink[200],
@@ -47,10 +50,16 @@ class CustomTableCalendar extends StatelessWidget {
             calendarFormat: calendarProvider.calendarFormat,
             selectedDayPredicate: (day) => day == calendarProvider.selectedDay,
             onDaySelected: (selectedDay, focusedDay) {
+              final maternaProvider =
+                  Provider.of<MaternaProvider>(context, listen: false);
+              final draftProvider =
+                  Provider.of<MaternaDraftProvider>(context, listen: false);
               manejarSeleccionDeFecha(
                 context: context,
                 selectedDay: selectedDay,
                 focusedDay: focusedDay,
+                draftProvider: draftProvider,
+                maternaProvider: maternaProvider,
               );
             },
             onFormatChanged: (format) {

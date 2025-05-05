@@ -10,8 +10,11 @@ class HomeScreens extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final materna = Provider.of<MaternaProvider>(context).materna;
-
+    final maternaProvider = context.watch<MaternaProvider>();
+    final materna = maternaProvider.materna;
+    if (materna == null) {
+      return const Center(child: Text('Cargando información...'));
+    }
     return LayoutScaffold(
       centerContent: true, // 👈 Activa el centrado vertical
       child: Column(
@@ -19,14 +22,14 @@ class HomeScreens extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           AppText(
-            text: '¡Hola ${materna?.nombre ?? 'mamá'}! 💖',
+            text: '¡Hola ${maternaProvider.materna!.nombre}! 💖',
             fontSize: 26,
             fontWeight: FontWeight.bold,
             color: Colors.pink,
             align: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          if (materna != null) ...[
+          if (maternaProvider.materna != null) ...[
             Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
@@ -37,13 +40,14 @@ class HomeScreens extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppText(text: 'Edad: ${materna.edad} años'),
+                    AppText(
+                        text: 'Edad: ${maternaProvider.materna!.edad} años'),
                     AppText(
                         text:
-                            'Semanas de embarazo: ${materna.semanasGestacion == -1 ? 'Menos de una' : materna.semanasGestacion}'),
+                            'Semanas de embarazo: ${maternaProvider.materna!.semanasGestacion == -1 ? 'Menos de una' : maternaProvider.materna!.semanasGestacion}'),
                     AppText(
                         text:
-                            'Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(materna.fechaEstimadaParto)}'),
+                            'Fecha probable de parto: ${DateFormat('dd MMMM yyyy', 'es_ES').format(maternaProvider.materna!.fechaEstimadaParto)}'),
                   ],
                 ),
               ),

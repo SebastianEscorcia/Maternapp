@@ -4,43 +4,34 @@ import 'package:maternapp/data/models/calendar_model.dart';
 
 class CalendarService {
   final String calendarCollection = 'calendars';
-  final String maternasCollection = 'maternas';
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   Future<void> crearCalendarioFirebase(CalendarModel calendar) async {
-    final calendarRef =
-        _firestore.collection(calendarCollection).doc(calendar.uId);
-
-    final maternaRef =
-        _firestore.collection(maternasCollection).doc(calendar.maternaId);
-
-    final calendarExists = await calendarRef.get();
-    final maternaExists = await maternaRef.get();
-
     final batch = _firestore.batch();
 
-    // Calendario: si existe lo actualiza, si no, lo crea
-    if (calendarExists.exists) {
-      batch.update(calendarRef, calendar.toJson());
-    } else {
-      batch.set(calendarRef, calendar.toJson());
-    }
+    final calendarioRef =
+        _firestore.collection(calendarCollection).doc(calendar.uId);
+    batch.set(calendarioRef, calendar.toJson());
 
-    // Materna: si existe lo actualiza, si no, lo crea solo con calendarioId
-    if (maternaExists.exists) {
-      batch.update(maternaRef, {'calendarioId': calendar.uId});
-    } else {
-      batch.set(maternaRef, {
-        'calendarioId': calendar.uId,
-        'uid': calendar.maternaId,
-      });
-    }
-
-    await batch.commit();
+    await batch.commit(); // ✅ Esto es indispensable
   }
 
-  
-  
+  Future<void> actualizarCalendario(CalendarModel calendar) async {
+    try {
+      await _firestore
+          .collection(calendarCollection)
+          .doc(calendar.uId)
+          .set(calendar.toJson(), SetOptions(merge: true));
+    } catch (e) {
+      print("Error en actualizar el calendario: $e");
+    }
+  }
+
+  Future<CalendarModel?> obtenerCalendario(String uid) async {
+    final doc = await _firestore.collection(calendarCollection).doc(uid).get();
+    if (doc.exists) return CalendarModel.fromJson(doc.data()!);
+    return null;
+  }
 
   void calcularDetalles(CalendarModel model) {
     if (model.selectedDay == null) return;

@@ -9,12 +9,11 @@ Future<void> manejarSeleccionDeFecha({
   required BuildContext context,
   required DateTime selectedDay,
   required DateTime focusedDay,
+  required MaternaDraftProvider draftProvider,
+  required MaternaProvider maternaProvider,
 }) async {
   final calendarProvider =
       Provider.of<CalendarProvider>(context, listen: false);
-  final draftProvider =
-      Provider.of<MaternaDraftProvider>(context, listen: false);
-  final maternaProvider = Provider.of<MaternaProvider>(context, listen: false);
 
   // ❌ Validar si la fecha es válida
   if (!calendarProvider.esFechaSeleccionValida(selectedDay)) {
@@ -27,7 +26,6 @@ Future<void> manejarSeleccionDeFecha({
     return;
   }
 
-  // ⚠️ Mostrar confirmación si ya había una fecha seleccionada
   final necesitaConfirmacion =
       calendarProvider.necesitaConfirmacion(selectedDay);
   if (necesitaConfirmacion) {
@@ -35,10 +33,8 @@ Future<void> manejarSeleccionDeFecha({
     if (!continuar) return;
   }
 
-  // ✅ Actualizar la fecha seleccionada y calcular detalles
   calendarProvider.forzarActualizarFecha(selectedDay, focusedDay);
 
-  // 🔄 Si ya había una Materna creada, reconstruirla con la nueva fecha
   if (maternaProvider.materna != null) {
     if (calendarProvider.dueDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(

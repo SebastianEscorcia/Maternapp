@@ -6,6 +6,7 @@ import 'package:maternapp/core/appProvider/app_providers.dart';
 //Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'package:maternapp/firebase_options.dart';
+import 'package:maternapp/presentation/screens/home/home_screens.dart';
 
 // Provider and Routes
 import 'package:provider/provider.dart';
@@ -18,10 +19,10 @@ import 'presentation/providers/maternal_provider.dart';
 import 'presentation/screens/edit materna/edit_materna_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/questions/questions_screen.dart';
+import 'presentation/screens/splash screen/splash_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
 import 'presentation/screens/vitals/vitals_screen.dart';
 import 'presentation/screens/welcome/welcome_screen.dart';
-import 'presentation/screens/wrapper/wrapper_screen.dart';
 import 'presentation/widgets/home/calendar/calendar_screen.dart';
 
 //Navigator key global para el auth provider
@@ -55,10 +56,10 @@ class MyApp extends StatelessWidget {
             ColorScheme.fromSeed(seedColor: Colors.pink[300] ?? Colors.pink),
       ),
       locale: const Locale('es', 'ES'),
-      initialRoute: Routes.wrapperScreen,
+      initialRoute: Routes.splashScreen,
       routes: {
-        Routes.wrapperScreen: (context) => const WrapperScreen(),
-        Routes.homeScreen: (context) => const MainScaffoldNavbar(),
+        Routes.splashScreen: (context) => const SplashScreen(),
+        Routes.mainScaffoldNavbar: (context) => const MainScaffoldNavbar(),
         Routes.calendarScreen: (context) => const CalendarScreen(),
         Routes.questionScreen: (conntext) => const QuestionScreen(),
         Routes.welcomeScreen: (context) => const WelcomeScreen(),
@@ -72,7 +73,8 @@ class MyApp extends StatelessWidget {
               Provider.of<MaternaProvider>(context, listen: false).materna;
           if (materna != null) provider.cargarDesdeMaterna(materna);
           return const EditMaternaScreen();
-        }
+        },
+        Routes.homeScreen: (context) => const HomeScreens()
       },
     );
   }

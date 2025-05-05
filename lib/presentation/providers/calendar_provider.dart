@@ -1,21 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:maternapp/domain/services/calendar_services.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../data/models/calendar_model.dart';
 
 class CalendarProvider extends ChangeNotifier {
+  CalendarModel? _model;
+  CalendarModel get model => _model!;
 
-  String id = FirebaseFirestore.instance.collection('calendars').doc().id;
-
-  late final CalendarModel model;
-
-  final CalendarService _calendarService = CalendarService();
-  
-  CalendarProvider() {
-    final id = FirebaseFirestore.instance.collection('calendars').doc().id;
-    model = CalendarModel(focusedDay: DateTime.now(), uId: id);
+  set model(CalendarModel? model) {
+    _model = model;
+    notifyListeners();
   }
+
+  void setCalendarModel(CalendarModel newModel) {
+    _model = newModel;
+    notifyListeners();
+  }
+
+  CalendarProvider() {
+    final generatedId =
+        FirebaseFirestore.instance.collection('calendars').doc().id;
+
+    _model = CalendarModel(
+      uId: generatedId,
+      focusedDay: DateTime.now(),
+    );
+  }
+  final _calendarService = CalendarService();
+
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   CalendarFormat get calendarFormat => _calendarFormat;
@@ -33,11 +47,38 @@ class CalendarProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> crearCalendarioFirebase() async {
-    await _calendarService.crearCalendarioFirebase(model);
+  Future<void> crearCalendarioFirebase(CalendarModel calendar) async {
+    try {
+      final existe = await _calendarService.obtenerCalendario(calendar.uId);
+      if (existe == null) {
+        await _calendarService.crearCalendarioFirebase(calendar);
+      } else {
+        await _calendarService.actualizarCalendario(calendar);
+      }
+      _model = await _calendarService.obtenerCalendario(calendar.uId);
+    } catch (e) {
+      if (kDebugMode) print(e);
+    }
   }
 
-  
+  Future<void> cargarCalendario(String uid) async {
+    try {
+      _calendarService.obtenerCalendario(uid);
+    } catch (e) {
+      if (kDebugMode) print(e);
+    }
+  }
+
+  void reiniciarModelo() {
+    final nuevoUid =
+        FirebaseFirestore.instance.collection('calendars').doc().id;
+    _model = CalendarModel(
+      uId: nuevoUid,
+      focusedDay: DateTime.now(),
+    );
+    notifyListeners();
+  }
+
   void updateCalendarFormat(CalendarFormat format) {
     _calendarFormat = format;
     notifyListeners();

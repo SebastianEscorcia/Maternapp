@@ -1,18 +1,17 @@
-
-
 import 'package:maternapp/data/models/drafts/maternal_draft.dart';
-
 import '../maternal_model.dart';
 
 extension MaternaDraftMapper on MaternaDraft {
   Materna toMaterna() {
     final fechaActual = DateTime.now();
-    final edad = (anioNacimiento != null) ? fechaActual.year - anioNacimiento! : 0;
-    
+    final edad = (anioNacimiento != null)
+        ? fechaActual.year - anioNacimiento!
+        : 0;
+
     final fumCalculada = fum ?? fechaActual;
     final semanas = fechaActual.difference(fumCalculada).inDays ~/ 7;
     final fechaEstimada = fumCalculada.add(const Duration(days: 280));
-    
+
     return Materna(
       uid: uId ?? '',
       nombre: nombre ?? '',
@@ -26,7 +25,7 @@ extension MaternaDraftMapper on MaternaDraft {
       esPrimerEmbarazo: esPrimerEmbarazo,
       tipoEmbarazo: tipoEmbarazo,
       tieneAntecedentes: tieneAntecedentes,
-      calendarioId: calendarId ?? '' ,
+      calendarioId: calendarId ?? '',
     );
   }
 }

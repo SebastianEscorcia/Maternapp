@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MaternalService {
   final String _maternaCollection = 'maternas';
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+
   Materna construirMaterna(MaternaDraft draft, CalendarModel calendar) {
     return Materna(
       nombre: draft.nombre!,
@@ -22,33 +23,35 @@ class MaternalService {
       esPrimerEmbarazo: draft.esPrimerEmbarazo,
       tipoEmbarazo: draft.tipoEmbarazo,
       tieneAntecedentes: draft.tieneAntecedentes,
-      uid:
-          draft.uId ?? '', 
+      uid: draft.uId ?? '',
     );
   }
 
-  Future<String> crearMaternaFirebase(MaternaDraft draft) async {
+  Future<String> crearMaternaFirebase(
+      MaternaDraft draft, CalendarModel calendar) async {
     final uid =
         draft.uId ?? FirebaseFirestore.instance.collection('maternas').doc().id;
 
-    final maternaData = draft
-        .toMaterna()
-        .toJson(); // Asegúrate de tener este método en MaternaDraft
+    final materna = construirMaterna(draft, calendar);
+    final maternaData = materna.toJson();
 
     await FirebaseFirestore.instance
         .collection('maternas')
         .doc(uid)
-        .set(maternaData, SetOptions(merge: false)); // ← Aquí se aplica
+        .set(maternaData, SetOptions(merge: false));
 
     return uid;
   }
 
-  Future<void> actualizarMaternaFirebase(MaternaDraft draft) async {
+  Future<void> actualizarMaternaFirebase(
+      MaternaDraft draft, CalendarModel calendar) async {
     try {
+      final materna = construirMaterna(draft, calendar);
+      final maternaData = materna.toJson();
       await _firestore
           .collection(_maternaCollection)
           .doc(draft.uId)
-          .set(draft.toMaterna().toJson(), SetOptions(merge: true));
+          .set(maternaData, SetOptions(merge: true));
     } catch (e) {
       print("Error al actualizar materna");
       rethrow;

@@ -1,19 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../data/models/calendar_model.dart';
+import '../../data/models/drafts/maternal_draft.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
 import '../../presentation/providers/calendar_provider.dart';
+import 'calendar_services.dart';
 import 'maternal_services.dart';
 
 class QuestionService {
   final MaternaDraftProvider draftProvider;
   final CalendarProvider calendarProvider;
-  final MaternalService maternaService;
   final MaternaProvider maternaProvider;
+  final CalendarService calendarService;
+  final MaternalService maternalService;
 
   QuestionService({
     required this.draftProvider,
     required this.calendarProvider,
-    required this.maternaService,
     required this.maternaProvider,
+    required this.calendarService,
+    required this.maternalService,
   });
 
   String? validarFormulario() {
@@ -44,27 +51,60 @@ class QuestionService {
     return null;
   }
 
-  void procesarFormulario() {
-    final materna = maternaService.construirMaterna(
-      draftProvider.draft,
-      calendarProvider.model,
-    );
-    print(materna.nombre);
-    maternaProvider.setMaterna(materna);
-  }
+  Future<void> guardarMaternaYCalendario({
+    required MaternaDraft draft,
+    required CalendarModel calendar,
+  }) async {
+    if (calendar.selectedDay == null ||
+        !calendarService.esFechaValida(calendar.selectedDay!)) {
+      throw Exception("Fecha seleccionada inválida. Debe ser anterior a hoy.");
+    }
 
-  Future<void> guardarMaternaYCalendario() async {
-    final draft = draftProvider.draft;
-    final calendar = calendarProvider.model;
+    // ✅ Calcula detalles (color, semanas, mensaje, etc.)
+    calendarService.calcularDetalles(calendar);
 
-    // Guardar materna y obtener el UID
-    final maternaId =
-        await maternaProvider.crearOActualizarMaternaFirebase(draft);
+    // ✅ GENERA UID SI ESTÁ VACÍO
+    if (calendar.uId.isEmpty) {
+      calendar.uId =
+          FirebaseFirestore.instance.collection('calendars').doc().id;
+    }
 
-    // Cargar la materna recién creada
-    await maternaProvider.cargarMaternaFirebase(maternaId);
+    // 🔄 Guarda o actualiza calendario
+    final calendarioExistente =
+        await calendarService.obtenerCalendario(calendar.uId);
+    if (calendarioExistente == null) {
+      await calendarService.crearCalendarioFirebase(calendar);
+    } else {
+      await calendarService.actualizarCalendario(calendar);
+    }
 
-    calendar.maternaId = maternaId;
-    await calendarProvider.crearCalendarioFirebase();
+    // 🔄 Asigna ID del calendario al draft
+    draft.calendarId = calendar.uId;
+
+    // 🔄 Guarda o actualiza la materna
+    String maternaUid;
+    if (draft.uId != null && draft.uId!.isNotEmpty) {
+      final maternaExistente =
+          await maternalService.obternerMaterna(draft.uId!);
+      if (maternaExistente != null) {
+        await maternalService.actualizarMaternaFirebase(draft, calendar);
+        maternaUid = draft.uId!;
+      } else {
+        maternaUid =
+            await maternalService.crearMaternaFirebase(draft, calendar);
+        draft.uId = maternaUid;
+      }
+    } else {
+      maternaUid = await maternalService.crearMaternaFirebase(draft, calendar);
+      draft.uId = maternaUid;
+    }
+
+    // 🔁 Asigna ID de materna al calendario y actualiza
+    calendar.maternaId = maternaUid;
+    await FirebaseFirestore.instance
+        .collection('maternas')
+        .doc(maternaUid)
+        .update({'calendarioId': calendar.uId});
+    await calendarService.actualizarCalendario(calendar);
   }
 }

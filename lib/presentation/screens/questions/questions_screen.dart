@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/Routes/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Alerts
-import '../../../core/utils/alerts/alerts.dart';
+
 //Services
-import '../../../domain/services/maternal_services.dart';
+
 import '../../../domain/services/questions_service.dart';
 import '../../layout/layout_scaffold.dart';
 //Providers
 import '../../providers/calendar_provider.dart';
 import '../../providers/maternal_draft_provider.dart';
-import '../../providers/maternal_provider.dart';
+
 import '../../providers/next_or_previous_questions_provider.dart';
 
 // Widgets
@@ -82,7 +83,7 @@ class QuestionScreen extends StatelessWidget {
           selectedValue: draftProviderMaterna.draft.tipoEmbarazo,
           onChanged: (val) =>
               draftProviderMaterna.updateTipoEmbarazo(val ?? ""),
-          icon: Icons.family_restroom, // 👨‍👩‍👧
+          icon: Icons.family_restroom,
         ),
         YesNoQuestionCard(
           questionText: "¿Tienes antecedentes médicos relevantes?",
@@ -94,34 +95,31 @@ class QuestionScreen extends StatelessWidget {
         const CustomTableCalendar(),
       ];
 
-  void onFinalizar(BuildContext context)async {
+  void onFinalizar(BuildContext context) async {
     final draftProvider =
         Provider.of<MaternaDraftProvider>(context, listen: false);
     final calendarProvider =
         Provider.of<CalendarProvider>(context, listen: false);
-    final maternaProvider =
-        Provider.of<MaternaProvider>(context, listen: false);
-
-    final service = QuestionService(
-      draftProvider: draftProvider,
-      calendarProvider: calendarProvider,
-      maternaService: MaternalService(),
-      maternaProvider: maternaProvider,
-    );
-
-    final error = service.validarFormulario();
-    if (error != null) {
-      mostrarAlerta(context, error);
-      return;
-    }
-
+    final questionService = context.read<QuestionService>();
     try {
-      service.procesarFormulario();
-      await service.guardarMaternaYCalendario();
-      Navigator.pushReplacementNamed(context, Routes.homeScreen);
+      await questionService.guardarMaternaYCalendario(
+        draft: draftProvider.draft,
+        calendar: calendarProvider.model,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('✅ Materna y calendario guardados correctamente')),
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('maternaUid', draftProvider.draft.uId!);
+
+      // ✅ Redirigir a splash (quien decide la ruta real final)
+      Navigator.pushReplacementNamed(context, Routes.splashScreen);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error inesperado: ${e.toString()}")),
+        SnackBar(content: Text('❌ Error: $e')),
       );
     }
   }

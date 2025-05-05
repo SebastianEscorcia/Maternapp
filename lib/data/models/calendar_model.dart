@@ -8,20 +8,21 @@ class CalendarModel {
   String trimesterMessage;
   Color weekColor;
   DateTime? lastDayYear;
-  final String uId;
+  String uId;
   String maternaId;
+  final String? calendarioId;
 
-  CalendarModel({
-    required this.uId,
-    this.selectedDay,
-    required this.focusedDay,
-    this.weeksPregnant = 0,
-    this.dueDate,
-    this.trimesterMessage = "",
-    this.weekColor = Colors.black,
-    this.maternaId = "",
-    this.lastDayYear
-  });
+  CalendarModel(
+      {required this.uId,
+      this.selectedDay,
+      required this.focusedDay,
+      this.weeksPregnant = 0,
+      this.dueDate,
+      this.trimesterMessage = "",
+      this.weekColor = Colors.black,
+      this.maternaId = "",
+      this.lastDayYear,
+      this.calendarioId});
 
   Map<String, dynamic> toJson() {
     return {
@@ -53,5 +54,15 @@ class CalendarModel {
           : null,
       maternaId: json['maternaId'] ?? "",
     );
+  }
+  void copyFrom(CalendarModel other) {
+    focusedDay = other.focusedDay;
+    selectedDay = other.selectedDay;
+    weeksPregnant = other.weeksPregnant;
+    dueDate = other.dueDate;
+    trimesterMessage = other.trimesterMessage;
+    weekColor = other.weekColor;
+    lastDayYear = other.lastDayYear;
+    maternaId = other.maternaId;
   }
 }
