@@ -112,7 +112,7 @@ class QuestionScreen extends StatelessWidget {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('maternaUid', draftProvider.draft.uId!);
       await prefs.setString('calendarioUid', calendarProvider.model.uId);
-      await prefs.reload(); // por si acaso
+      await prefs.reload(); // Recargar el sharedPreferends
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
