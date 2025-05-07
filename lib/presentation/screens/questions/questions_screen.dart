@@ -101,21 +101,26 @@ class QuestionScreen extends StatelessWidget {
     final calendarProvider =
         Provider.of<CalendarProvider>(context, listen: false);
     final questionService = context.read<QuestionService>();
+
     try {
       await questionService.guardarMaternaYCalendario(
         draft: draftProvider.draft,
         calendar: calendarProvider.model,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('✅ Materna y calendario guardados correctamente')),
-      );
-
+      // ✅ Guarda el UID correctamente
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('maternaUid', draftProvider.draft.uId!);
+      await prefs.setString('calendarioUid', calendarProvider.model.uId);
+      await prefs.reload(); // por si acaso
 
-      // ✅ Redirigir a splash (quien decide la ruta real final)
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Materna y calendario guardados correctamente'),
+        ),
+      );
+
+      // ✅ Ahora sí navega
       Navigator.pushReplacementNamed(context, Routes.splashScreen);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

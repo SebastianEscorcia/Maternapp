@@ -63,9 +63,14 @@ class CalendarProvider extends ChangeNotifier {
 
   Future<void> cargarCalendario(String uid) async {
     try {
-      _calendarService.obtenerCalendario(uid);
+      final calendario = await _calendarService.obtenerCalendario(uid);
+      if (calendario != null) {
+        _model = calendario;
+        print("✅ Calendario cargado: ${_model?.uId}");
+        notifyListeners();
+      }
     } catch (e) {
-      if (kDebugMode) print(e);
+      if (kDebugMode) print('Error al cargar calendario: $e');
     }
   }
 

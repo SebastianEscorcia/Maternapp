@@ -1,5 +1,4 @@
 import 'package:maternapp/data/models/calendar_model.dart';
-import 'package:maternapp/data/models/drafts/materna_draft_mapper.dart';
 import 'package:maternapp/data/models/drafts/maternal_draft.dart';
 import 'package:maternapp/data/models/maternal_model.dart';
 //Firebase

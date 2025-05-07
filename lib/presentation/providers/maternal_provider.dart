@@ -15,6 +15,7 @@ class MaternaProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   MaternalService get maternalService => _maternalService;
+  CalendarService get calendarService => _calendarService;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -27,7 +28,7 @@ class MaternaProvider with ChangeNotifier {
       required CalendarService calendarService})
       : _maternalService = maternalService,
         _calendarService = calendarService;
-         // Inyección del servicio
+  // Inyección del servicio
   void setMaterna(Materna nueva) {
     _materna = nueva;
     notifyListeners();
@@ -72,6 +73,7 @@ class MaternaProvider with ChangeNotifier {
     try {
       _materna = await _maternalService.obternerMaterna(uid);
       _error = null;
+      print("✅ Materna cargada: ${_materna?.nombre}");
     } catch (e) {
       _error = 'Error al cargar la materna $e';
       if (kDebugMode) print(_error);

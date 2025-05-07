@@ -29,19 +29,21 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _inicializar() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1200));
 
     final prefs = await SharedPreferences.getInstance();
-    final uid = prefs.getString('maternaUid');
+    final maternaId = prefs.getString('maternaUid');
+    final calendarioId = prefs.getString('calendarioUid');
 
-    if (uid != null && uid.isNotEmpty) {
+    if (maternaId != null && calendarioId != null) {
       final maternaProvider =
           Provider.of<MaternaProvider>(context, listen: false);
       final calendarProvider =
           Provider.of<CalendarProvider>(context, listen: false);
-
-      await maternaProvider.cargarMaternaFirebase(uid);
-      await calendarProvider.cargarCalendario(calendarProvider.model.uId);
+      print("SplashScreen → maternaId: $maternaId");
+      print("SplashScreen → calendarioId: $calendarioId");
+      await maternaProvider.cargarMaternaFirebase(maternaId);
+      await calendarProvider.cargarCalendario(calendarioId);
 
       Navigator.pushReplacementNamed(context, Routes.mainScaffoldNavbar);
     } else {
