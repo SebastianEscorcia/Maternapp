@@ -71,9 +71,10 @@ class MaternaProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      print("🌀 Buscando materna con UID: $uid");
       _materna = await _maternalService.obternerMaterna(uid);
+      print("✅ Materna encontrada: ${_materna?.nombre}");
       _error = null;
-      print("✅ Materna cargada: ${_materna?.nombre}");
     } catch (e) {
       _error = 'Error al cargar la materna $e';
       if (kDebugMode) print(_error);
