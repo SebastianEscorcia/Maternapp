@@ -21,6 +21,33 @@ class EditMaternaProvider with ChangeNotifier {
     final materna = provider.materna;
     if (materna != null) {
       provider.setMaterna(Materna(
+          nombre: nombreController.text,
+          edad: materna.edad,
+          peso: double.parse(pesoController.text),
+          estatura: double.parse(estaturaController.text),
+          fum: materna.fum,
+          fechaEstimadaParto: materna.fechaEstimadaParto,
+          semanasGestacion: materna.semanasGestacion,
+          embarazoActual: materna.embarazoActual,
+          esPrimerEmbarazo: materna.esPrimerEmbarazo,
+          tipoEmbarazo: materna.tipoEmbarazo,
+          tieneAntecedentes: materna.tieneAntecedentes,
+          uid: materna.uid));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Datos actualizados")),
+      );
+
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> guardarCambiosMatenaFirebase(BuildContext context) async {
+    final provider = Provider.of<MaternaProvider>(context, listen: false);
+    final materna = provider.materna;
+
+    if (materna != null) {
+      provider.setMaterna(Materna(
         nombre: nombreController.text,
         edad: materna.edad,
         peso: double.parse(pesoController.text),
@@ -32,11 +59,13 @@ class EditMaternaProvider with ChangeNotifier {
         esPrimerEmbarazo: materna.esPrimerEmbarazo,
         tipoEmbarazo: materna.tipoEmbarazo,
         tieneAntecedentes: materna.tieneAntecedentes,
-        uid: materna.uid
+        uid: materna.uid,
       ));
 
+      await provider.guardarCambiosMaternaFirebase(context);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Datos actualizados")),
+        const SnackBar(content: Text("DATOS ACTUALIZADOS ")),
       );
 
       Navigator.pop(context);

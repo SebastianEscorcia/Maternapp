@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:maternapp/domain/services/calendar_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../data/models/calendar_model.dart';
 
@@ -72,6 +73,25 @@ class CalendarProvider extends ChangeNotifier {
     } catch (e) {
       if (kDebugMode) print('Error al cargar calendario: $e');
     }
+  }
+
+  Future<void> guardarCambiosCalendarioEnFirebase() async {
+    if (_model == null || _model!.uId.isEmpty) return;
+
+    try {
+      await _calendarService.actualizarCalendario(_model!);
+      await guardarCalendarioEnLocal(_model!.uId); // 💾 Guardado en memoria 
+      if (kDebugMode) print("✅ Calendario actualizado y UID guardado");
+    } catch (e) {
+      if (kDebugMode) print("❌ Error al actualizar calendario: $e");
+    }
+  }
+
+  // SE UTILIZA PARA TERNER PERSISTENCIA DE LOS DATOS DEL CALENDARIO DESPUÉS DE ACTUALIZARLOS EN MEMORIA
+  Future<void> guardarCalendarioEnLocal(String uid) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('calendarioUid', uid);
+    if (kDebugMode) print("🗂️ UID de calendario guardado localmente: $uid");
   }
 
   void reiniciarModelo() {

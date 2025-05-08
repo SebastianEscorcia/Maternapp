@@ -28,7 +28,7 @@ class MainScaffoldNavbar extends StatelessWidget {
       ProfileScreen(),
       VitalsScreen(),
     ];
-
+    
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,

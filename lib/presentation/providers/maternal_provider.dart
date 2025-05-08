@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:maternapp/data/models/maternal_model.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/models/calendar_model.dart';
 import '../../data/models/drafts/maternal_draft.dart';
 import '../../domain/services/calendar_services.dart';
 import '../../domain/services/maternal_services.dart';
+import 'calendar_provider.dart';
 
 class MaternaProvider with ChangeNotifier {
   Materna? _materna;
@@ -103,6 +106,31 @@ class MaternaProvider with ChangeNotifier {
       return newUid;
     } catch (e) {
       _error = 'Error al guardar la materna $e';
+      if (kDebugMode) print(_error);
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> guardarCambiosMaternaFirebase(BuildContext context) async {
+    if (_materna == null) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final draft = MaternaDraft.fromMaterna(_materna!);
+
+      //  Obteniendo el calendar model del provider
+      final calendarProvider =
+          Provider.of<CalendarProvider>(context, listen: false);
+      final calendar = calendarProvider.model;
+
+      await _maternalService.actualizarMaternaFirebase(draft, calendar);
+    } catch (e) {
+      _error = 'Error al guardar en Firebase: $e';
       if (kDebugMode) print(_error);
       rethrow;
     } finally {

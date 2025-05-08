@@ -14,25 +14,25 @@ class ButtonTips extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.lightbulb_outline,
-            color: isActive ? Colors.pink : Colors.grey,
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Consejos',
-            style: TextStyle(
-              fontSize: 12,
-              color: isActive ? Colors.pink : Colors.grey,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+      child: AnimatedScale(
+        scale: isActive ? 1.2 : 1.0,
+        duration: const Duration(milliseconds: 250),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lightbulb,
+              color: isActive ? Colors.pinkAccent : Colors.grey,
             ),
-          ),
-        ],
+            Text(
+              "Consejos",
+              style: TextStyle(
+                fontSize: 12,
+                color: isActive ? Colors.pinkAccent : Colors.grey,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

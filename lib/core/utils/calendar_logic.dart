@@ -33,8 +33,15 @@ Future<void> manejarSeleccionDeFecha({
     if (!continuar) return;
   }
 
+  // ✅ Actualizar modelo en memoria
   calendarProvider.forzarActualizarFecha(selectedDay, focusedDay);
 
+  // ✅ Guardar calendario en Firebase si ya existe (ya tiene UID asignado)
+  if (calendarProvider.model.uId.isNotEmpty) {
+    await calendarProvider.guardarCambiosCalendarioEnFirebase();
+  }
+
+  // ✅ Si ya hay materna cargada, también la actualizamos en memoria
   if (maternaProvider.materna != null) {
     if (calendarProvider.dueDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(

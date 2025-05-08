@@ -23,6 +23,7 @@ class MaternalService {
       tipoEmbarazo: draft.tipoEmbarazo,
       tieneAntecedentes: draft.tieneAntecedentes,
       uid: draft.uId ?? '',
+      calendarioId: calendar.uId
     );
   }
 

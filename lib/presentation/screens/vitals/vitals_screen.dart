@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
+import 'package:provider/provider.dart';
 
 import '../../widgets/vitals/vital_card.dart';
+//PROVIDER  del BOTTOMNAVBAR
+import '../../providers/navigation_navbar_provider.dart';
+//BottomNavbar
+import '../../widgets/home/navbar/botton_navbar.dart';
 
 class VitalsScreen extends StatelessWidget {
   const VitalsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final navProvider = Provider.of<NavigationNavbarProvider>(context);
+    // SI NECESITA MOSTRAR LA BARRA O NO
+    final isInsideMainFlow = ModalRoute.of(context)?.isFirst ?? false;
     return LayoutScaffold(
       title: "Signos vitales 🩺",
       centerContent: false,
+      bottomNav: isInsideMainFlow
+          ? null
+          : BottonNavbar(
+              currentIndex: navProvider.currentIndex,
+              onTap: (index) {
+                navProvider.irAPestania(context, index);
+              },
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

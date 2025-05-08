@@ -1,40 +1,38 @@
 import 'package:flutter/material.dart';
 
 class ButtonVitals extends StatelessWidget {
-  final VoidCallback onPressed;
   final bool isActive;
+  final VoidCallback onPressed;
 
   const ButtonVitals({
     super.key,
+    required this.isActive,
     required this.onPressed,
-    this.isActive = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? Colors.pink : Colors.grey;
-
     return GestureDetector(
       onTap: onPressed,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.monitor_heart_outlined,
-            color: color,
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Vitales',
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+      child: AnimatedScale(
+        scale: isActive ? 1.2 : 1.0,
+        duration: const Duration(milliseconds: 250),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.favorite,
+              color: isActive ? Colors.pinkAccent : Colors.grey,
             ),
-          ),
-        ],
+            Text(
+              "Signos",
+              style: TextStyle(
+                fontSize: 12,
+                color: isActive ? Colors.pinkAccent : Colors.grey,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

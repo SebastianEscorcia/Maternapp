@@ -17,6 +17,9 @@ class CalendarService {
   }
 
   Future<void> actualizarCalendario(CalendarModel calendar) async {
+    if (calendar.uId.isEmpty) {
+    throw Exception("❌ UID de calendario vacío. No se puede actualizar.");
+  }
     try {
       await _firestore
           .collection(calendarCollection)

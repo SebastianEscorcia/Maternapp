@@ -14,25 +14,25 @@ class ButtonHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.home_outlined,
-            color: isActive ? Colors.pink : Colors.grey,
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Inicio',
-            style: TextStyle(
-              fontSize: 12,
-              color: isActive ? Colors.pink : Colors.grey,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+      child: AnimatedScale(
+        scale: isActive ? 1.2 : 1.0,
+        duration: const Duration(milliseconds: 250),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.home_filled,
+              color: isActive ? Colors.pinkAccent : Colors.grey,
             ),
-          ),
-        ],
+            Text(
+              "Inicio",
+              style: TextStyle(
+                fontSize: 12,
+                color: isActive ? Colors.pinkAccent : Colors.grey,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
