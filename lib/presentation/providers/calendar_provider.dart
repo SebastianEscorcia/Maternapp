@@ -80,14 +80,14 @@ class CalendarProvider extends ChangeNotifier {
 
     try {
       await _calendarService.actualizarCalendario(_model!);
-      await guardarCalendarioEnLocal(_model!.uId); // 💾 Guardado en memoria 
+      await guardarCalendarioEnLocal(_model!.uId); // 💾 Guardado en memoria
       if (kDebugMode) print("✅ Calendario actualizado y UID guardado");
     } catch (e) {
       if (kDebugMode) print("❌ Error al actualizar calendario: $e");
     }
   }
 
-  // SE UTILIZA PARA TERNER PERSISTENCIA DE LOS DATOS DEL CALENDARIO DESPUÉS DE ACTUALIZARLOS EN MEMORIA
+  // SE UTILIZA PARA TENER PERSISTENCIA DE LOS DATOS DEL CALENDARIO DESPUÉS DE ACTUALIZARLOS EN MEMORIA
   Future<void> guardarCalendarioEnLocal(String uid) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('calendarioUid', uid);

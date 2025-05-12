@@ -11,7 +11,7 @@ extension MaternaDraftMapper on MaternaDraft {
     final fumCalculada = fum ?? fechaActual;
     final semanas = fechaActual.difference(fumCalculada).inDays ~/ 7;
     final fechaEstimada = fumCalculada.add(const Duration(days: 280));
-
+    
     return Materna(
       uid: uId ?? '',
       nombre: nombre ?? '',

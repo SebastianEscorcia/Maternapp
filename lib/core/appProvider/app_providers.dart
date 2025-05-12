@@ -20,7 +20,7 @@ class AppProviders {
         Provider<MaternalService>(create: (_) => MaternalService()),
 
         // Providers puros
-        ChangeNotifierProvider(create: (_) => MaternaDraftProvider()),
+        ChangeNotifierProvider.value(value: MaternaDraftProvider()),
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
         ChangeNotifierProvider(
             create: (_) => NextOrPreviousQuestionsProvider()),

@@ -51,7 +51,7 @@ class CalendarModel {
       weekColor: Color(json['weekColor'] ?? Colors.black.value),
       lastDayYear: json['lastDayYear'] != null
           ? DateTime.parse(json['lastDayYear'])
-          : null,
+          : DateTime(DateTime.now().year + 1, 12, 31),
       maternaId: json['maternaId'] ?? "",
     );
   }

@@ -125,14 +125,13 @@ class ProfileScreen extends StatelessWidget {
                 trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   //Navigator.pushNamed(context, '/vitals');
-                  /* SOLUCIÓN PARA IR A SIGNOS VITALES 
+                  //SOLUCIÓN PARA IR A SIGNOS VITALES
                   final navProvider = Provider.of<NavigationNavbarProvider>(
                       context,
                       listen: false);
                   navProvider.setIndex(4); //  "Signos" es el índice 4
-                  Navigator.of(context).popUntil((route) => route.isFirst);*/
-                   Provider.of<NavigationNavbarProvider>(context,listen: false).irAPestania(context, 4);
-
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  //Provider.of<NavigationNavbarProvider>(context,listen: false).irAPestania(context, 4);
                 },
               ),
             ),

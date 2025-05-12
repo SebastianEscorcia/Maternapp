@@ -120,7 +120,7 @@ class QuestionScreen extends StatelessWidget {
         ),
       );
 
-      // ✅ Ahora sí navega
+      // Navegación al splash
       Navigator.pushReplacementNamed(context, Routes.splashScreen);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

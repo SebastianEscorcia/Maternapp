@@ -8,22 +8,29 @@ class MaternalService {
   final String _maternaCollection = 'maternas';
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
-  Materna construirMaterna(MaternaDraft draft, CalendarModel calendar) {
+  Materna construirMaterna(MaternaDraft? draft, CalendarModel calendar) {
+    final fechaActual = DateTime.now();
+    final fumCalculada = calendar.selectedDay ?? fechaActual;
+    final semanas = fechaActual.difference(fumCalculada).inDays ~/ 7;
+    final fechaEstimada =
+        calendar.dueDate ?? fumCalculada.add(const Duration(days: 280));
+
     return Materna(
-      nombre: draft.nombre!,
-      edad: DateTime.now().year - draft.anioNacimiento!,
-      peso: draft.peso!,
-      estatura: draft.estatura!,
-      fum: calendar.selectedDay!,
-      fechaEstimadaParto:
-          calendar.dueDate ?? calendar.selectedDay!.add(Duration(days: 280)),
-      semanasGestacion: calendar.weeksPregnant,
-      embarazoActual: draft.embarazoActual,
-      esPrimerEmbarazo: draft.esPrimerEmbarazo,
-      tipoEmbarazo: draft.tipoEmbarazo,
-      tieneAntecedentes: draft.tieneAntecedentes,
-      uid: draft.uId ?? '',
-      calendarioId: calendar.uId
+      uid: draft?.uId ?? '',
+      nombre: draft?.nombre ?? "Desconocido",
+      edad: (draft?.anioNacimiento != null)
+          ? fechaActual.year - draft!.anioNacimiento!
+          : 30, // Edad por defecto
+      peso: draft?.peso ?? 60.0, // Peso por defecto
+      estatura: draft?.estatura ?? 1.65, // Estatura por defecto
+      fum: fumCalculada,
+      fechaEstimadaParto: fechaEstimada,
+      semanasGestacion: semanas,
+      embarazoActual: draft?.embarazoActual ?? false,
+      esPrimerEmbarazo: draft?.esPrimerEmbarazo ?? true,
+      tipoEmbarazo: draft?.tipoEmbarazo ?? "Normal",
+      tieneAntecedentes: draft?.tieneAntecedentes ?? false,
+      calendarioId: calendar.uId,
     );
   }
 
