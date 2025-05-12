@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/materna_edit_provider.dart';
+import '../../providers/maternal_provider.dart';
 import '../../providers/navigation_navbar_provider.dart';
 import '../../widgets/home/navbar/botton_navbar.dart';
 
@@ -11,13 +12,22 @@ class EditMaternaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final editProvider = Provider.of<EditMaternaProvider>(context);
     final navProvider = Provider.of<NavigationNavbarProvider>(context);
+    final maternaProvider = Provider.of<MaternaProvider>(context);
+    if (maternaProvider.materna != null) {
+      editProvider.cargarDesdeMaterna(maternaProvider.materna!);
+    } else {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Editar datos 👩‍⚕️")),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Editar datos 👩‍⚕️")),
       bottomNavigationBar: BottonNavbar(
         currentIndex: navProvider.currentIndex,
         onTap: (index) {
-          // SI ESTAMOS EN LA MISMA SCREEN NO SE REDIBUJA EVITA NAVEGACIÓN INNESESARIA 
+          // SI ESTAMOS EN LA MISMA SCREEN NO SE REDIBUJA EVITA NAVEGACIÓN INNESESARIA
           if (navProvider.currentIndex != index) {
             navProvider.setIndex(index);
             Navigator.of(context).popUntil((route) => route.isFirst);
