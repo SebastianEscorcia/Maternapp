@@ -70,9 +70,18 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/maternapp.png
-    - assets/animations/welcome.json
+    - assets/animations/loading_heart.json
     - assets/videos/welcome.mp4
     - assets/animations/women_pregnant.json
+    - assets/animations/success.json
+    - assets/images/nameicon.png
+    - assets/images/birthdayicon.png
+    - assets/images/weight_icon.png
+    - assets/images/height_icon.png
+    - assets/images/pregnant_icon.png
+    - assets/images/first_pregnancy_icon.png
+    - assets/images/multiple_pregnancy_icon.png
+    - assets/images/medical_icon.png
     - assets/config/.env
 
 

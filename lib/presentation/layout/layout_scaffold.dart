@@ -6,8 +6,9 @@ class LayoutScaffold extends StatelessWidget {
   final Widget? bottomNav;
   final bool showBack;
   final bool centerContent;
-
+  final Color? backgroudColor;
   const LayoutScaffold({
+    this.backgroudColor,
     super.key,
     this.title = "",
     required this.child,
@@ -24,8 +25,7 @@ class LayoutScaffold extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor:Colors.white, 
-          
+      backgroundColor: Colors.white,
       appBar: title.isNotEmpty
           ? AppBar(
               backgroundColor: const Color(0xFFFFF1F5),

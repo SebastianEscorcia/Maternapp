@@ -6,6 +6,7 @@ import '../../domain/services/calendar_services.dart';
 import '../../domain/services/maternal_services.dart';
 import '../../domain/services/questions_service.dart';
 import '../../presentation/providers/Auth/auth_provider.dart';
+import '../../presentation/providers/QuenstionsMessage/motivational_message_provider.dart';
 import '../../presentation/providers/calendar_provider.dart';
 import '../../presentation/providers/materna_edit_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
@@ -26,6 +27,9 @@ class AppProviders {
             create: (_) => NextOrPreviousQuestionsProvider()),
         ChangeNotifierProvider(create: (_) => NavigationNavbarProvider()),
         ChangeNotifierProvider(create: (_) => EditMaternaProvider()),
+        ChangeNotifierProvider(
+          create: (_) => MotivationalMessageProvider(),
+        ),
 
         ChangeNotifierProxyProvider2<MaternalService, CalendarService,
             MaternaProvider>(

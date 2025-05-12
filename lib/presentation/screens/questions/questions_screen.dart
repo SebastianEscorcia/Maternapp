@@ -1,133 +1,23 @@
+// Archivo: lib/widgets/question_screen/question_screen.dart
+
 import 'package:flutter/material.dart';
-import 'package:maternapp/Routes/routes.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-// Alerts
-
-//Services
-
-import '../../../domain/services/questions_service.dart';
 import '../../layout/layout_scaffold.dart';
-//Providers
-import '../../providers/calendar_provider.dart';
+import '../../providers/QuenstionsMessage/motivational_message_provider.dart';
 import '../../providers/maternal_draft_provider.dart';
-
 import '../../providers/next_or_previous_questions_provider.dart';
-
-// Widgets
-import '../../widgets/home/calendar/custom_table_calendar.dart';
-import '../../widgets/questions_before_login_or_register/dropdown_questions_card.dart';
-import '../../widgets/questions_before_login_or_register/input_question_card.dart';
-import '../../widgets/questions_before_login_or_register/number_picker_questions_card.dart';
-import '../../widgets/questions_before_login_or_register/year_picker_question_card.dart';
-import '../../widgets/questions_before_login_or_register/yes_no_questions_card.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_card_transition.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_finish_handler.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_footer_message.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_list_builder.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_navigation_buttons.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_progress_bar.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_step_card_decorations.dart';
+import '../../widgets/quenstions/newQuenstionScreen/question_step_indicator.dart';
 
 class QuestionScreen extends StatelessWidget {
   const QuestionScreen({super.key});
-
-  List<Widget> buildQuestions(MaternaDraftProvider draftProviderMaterna) => [
-        InputQuestionCard(
-          questionText: "¿Cuál es tu nombre?",
-          hintText: "Escribe tu nombre",
-          inputType: TextInputType.name,
-          initialValue: draftProviderMaterna.draft.nombre,
-          onChanged: (val) => draftProviderMaterna.updateNombre(val),
-          icon: Icons.person,
-        ),
-        YearPickerQuestionCard(
-          questionText: "¿Cuándo naciste?",
-          selectedYear: draftProviderMaterna.draft.anioNacimiento,
-          onChanged: (year) => draftProviderMaterna.updateAnioNacimiento(year),
-          icon: Icons.cake,
-        ),
-        NumberPickerQuestionCard(
-          questionText: "¿Cuál es tu peso?",
-          selectedValue: draftProviderMaterna.draft.peso?.round(),
-          minValue: 30,
-          maxValue: 150,
-          unit: "kg",
-          onChanged: (val) => draftProviderMaterna.updatePeso(val.toDouble()),
-          icon: Icons.monitor_weight,
-        ),
-        NumberPickerQuestionCard(
-          questionText: "¿Cuál es tu estatura?",
-          selectedValue: draftProviderMaterna.draft.estatura != null
-              ? (draftProviderMaterna.draft.estatura! * 100).round()
-              : null,
-          minValue: 120,
-          maxValue: 200,
-          unit: "cm",
-          onChanged: (val) => draftProviderMaterna.updateEstatura(val / 100),
-          icon: Icons.height,
-        ),
-        YesNoQuestionCard(
-          questionText: "¿Estás embarazada actualmente?",
-          initialValue: draftProviderMaterna.draft.embarazoActual,
-          onChanged: (val) {
-            if (val != null) draftProviderMaterna.updateEmbarazoActual(val);
-          },
-          icon: Icons.favorite,
-        ),
-        YesNoQuestionCard(
-          questionText: "¿Es tu primer embarazo?",
-          initialValue: draftProviderMaterna.draft.esPrimerEmbarazo,
-          onChanged: (val) {
-            if (val != null) draftProviderMaterna.updateEsPrimerEmbarazo(val);
-          },
-          icon: Icons.pregnant_woman,
-        ),
-        DropdownQuestionCard(
-          questionText: "¿Tu embarazo es único o múltiple?",
-          options: ["Único", "Gemelar", "Trillizos o más"],
-          selectedValue: draftProviderMaterna.draft.tipoEmbarazo,
-          onChanged: (val) =>
-              draftProviderMaterna.updateTipoEmbarazo(val ?? ""),
-          icon: Icons.family_restroom,
-        ),
-        YesNoQuestionCard(
-          questionText: "¿Tienes antecedentes médicos relevantes?",
-          initialValue: draftProviderMaterna.draft.tieneAntecedentes,
-          onChanged: (val) {
-            if (val != null) draftProviderMaterna.updateTieneAntecedentes(val);
-          },
-        ),
-        const CustomTableCalendar(),
-      ];
-
-  void onFinalizar(BuildContext context) async {
-    final draftProvider =
-        Provider.of<MaternaDraftProvider>(context, listen: false);
-    final calendarProvider =
-        Provider.of<CalendarProvider>(context, listen: false);
-    final questionService = context.read<QuestionService>();
-
-    try {
-      await questionService.guardarMaternaYCalendario(
-        draft: draftProvider.draft,
-        calendar: calendarProvider.model,
-      );
-
-      // ✅ Guarda el UID correctamente
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('maternaUid', draftProvider.draft.uId!);
-      await prefs.setString('calendarioUid', calendarProvider.model.uId);
-      await prefs.reload(); // Recargar el sharedPreferends
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ Materna y calendario guardados correctamente'),
-        ),
-      );
-
-      // Navegación al splash
-      Navigator.pushReplacementNamed(context, Routes.splashScreen);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error: $e')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,42 +29,76 @@ class QuestionScreen extends StatelessWidget {
 
     return LayoutScaffold(
       showBack: false,
-      child: Column(
+      backgroudColor: const Color(0xFFFFF9FB),
+      title: "Tu Perfil Materno",
+      child: Stack(
         children: [
-          Expanded(
-              child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            transitionBuilder: (child, animation) {
-              return SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(1, 0),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: FadeTransition(opacity: animation, child: child),
+          const QuestionStepCardDecorations(),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Indicador de pasos
+                      QuestionStepIndicator(
+                        index: nextOrPreviusQuestionsProvider.index,
+                        total: questions.length,
+                      ),
+
+                      // Barra de progreso
+                      QuestionProgressBar(
+                        index: nextOrPreviusQuestionsProvider.index,
+                        total: questions.length,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Animación de cambio de pregunta
+                      QuestionCardTransition(
+                        child: KeyedSubtree(
+                          key: ValueKey(nextOrPreviusQuestionsProvider.index),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child:
+                                questions[nextOrPreviusQuestionsProvider.index],
+                          ),
+                        ),
+                      ),
+
+                      // Mensaje motivador
+                      QuestionFooterMessage(
+                        message: context
+                            .watch<MotivationalMessageProvider>()
+                            .mensajeActual,
+                      ),
+
+                      // Botones
+                      QuestionNavigationButtons(
+                        isFirst: nextOrPreviusQuestionsProvider.index == 0,
+                        isLast: isLast,
+                        onBack: nextOrPreviusQuestionsProvider.previousPage,
+                        onNext: () => nextOrPreviusQuestionsProvider
+                            .nextPage(questions.length),
+                        onFinish: () => onFinalizar(context),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
-            child: KeyedSubtree(
-              key: ValueKey(nextOrPreviusQuestionsProvider.index),
-              child: questions[nextOrPreviusQuestionsProvider.index],
-            ),
-          )),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (nextOrPreviusQuestionsProvider.index > 0)
-                ElevatedButton(
-                  onPressed: nextOrPreviusQuestionsProvider.previousPage,
-                  child: const Text("Anterior"),
-                ),
-              ElevatedButton(
-                onPressed: isLast
-                    ? () => onFinalizar(context)
-                    : () => nextOrPreviusQuestionsProvider
-                        .nextPage(questions.length),
-                child: Text(isLast ? "Finalizar" : "Siguiente"),
-              ),
-            ],
           ),
         ],
       ),
