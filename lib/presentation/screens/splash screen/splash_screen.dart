@@ -13,25 +13,29 @@ class SplashScreen extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     final maternaId = prefs.getString('maternaUid');
     final calendarioId = prefs.getString('calendarioUid');
-
-    print("SplashScreen → maternaId: $maternaId");
-    print("SplashScreen → calendarioId: $calendarioId");
-    //  Espera 2 segundos obligatorios antes de continuar
+    
+    // Simular un retraso para mostrar la pantalla de carga
     await Future.delayed(const Duration(seconds: 2));
 
-    if (maternaId != null && calendarioId != null) {
-      final maternaProvider =
-          Provider.of<MaternaProvider>(context, listen: false);
-      final calendarProvider =
-          Provider.of<CalendarProvider>(context, listen: false);
+    final maternaProvider =
+        Provider.of<MaternaProvider>(context, listen: false);
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
 
+    if (maternaId != null) {
       await maternaProvider.cargarMaternaFirebase(maternaId);
-      await calendarProvider.cargarCalendario(calendarioId);
 
-      return Routes.mainScaffoldNavbar;
-    } else {
-      return Routes.welcomeScreen;
+      if (maternaProvider.materna != null) {
+        if (calendarioId != null && calendarioId.isNotEmpty) {
+          await calendarProvider.cargarCalendario(calendarioId);
+          return Routes.mainScaffoldNavbar;
+        } else {
+          return Routes.calendarScreen;
+        }
+      }
     }
+
+    return Routes.welcomeScreen;
   }
 
   @override

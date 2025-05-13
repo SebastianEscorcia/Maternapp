@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../data/models/calendar_model.dart';
 import '../../data/models/drafts/maternal_draft.dart';
@@ -55,6 +56,10 @@ class QuestionService {
     required MaternaDraft draft,
     required CalendarModel calendar,
   }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if ((draft.uId == null || draft.uId!.isEmpty) && user != null) {
+      draft.uId = user.uid;
+    }
     if (calendar.selectedDay == null ||
         !calendarService.esFechaValida(calendar.selectedDay!)) {
       throw Exception("Fecha seleccionada inválida. Debe ser anterior a hoy.");

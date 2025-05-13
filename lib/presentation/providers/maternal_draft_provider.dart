@@ -1,9 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:maternapp/data/models/drafts/maternal_draft.dart';
 
 class MaternaDraftProvider with ChangeNotifier {
   final MaternaDraft _draft = MaternaDraft();
   MaternaDraft get draft => _draft;
+
+  void asegurarUidDesdeFirebase() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null && (_draft.uId == null || _draft.uId!.isEmpty)) {
+      _draft.uId = user.uid;
+    }
+  }
 
   void updateNombre(String nombre) {
     _draft.nombre = nombre;

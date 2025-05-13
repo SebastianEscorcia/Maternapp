@@ -69,7 +69,9 @@ class VitalsScreen extends StatelessWidget {
           Center(
             child: ElevatedButton.icon(
               onPressed: () {
-                // Aquí puedes abrir una pantalla de lectura automática o formulario
+                // Crear lógica para tomar signos vitales
+
+              
               },
               icon: const Icon(Icons.monitor_heart),
               label: const Text("Tomar signos ahora"),

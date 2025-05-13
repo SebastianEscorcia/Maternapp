@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:maternapp/data/models/calendar_model.dart';
 import 'package:maternapp/data/models/drafts/maternal_draft.dart';
 import 'package:maternapp/data/models/maternal_model.dart';
@@ -36,14 +37,17 @@ class MaternalService {
 
   Future<String> crearMaternaFirebase(
       MaternaDraft draft, CalendarModel calendar) async {
-    final uid =
-        draft.uId ?? FirebaseFirestore.instance.collection('maternas').doc().id;
+    // Usa el uid de Firebase si el usuario está autenticado
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final uid = currentUser?.uid ??
+        draft.uId ??
+        _firestore.collection('maternas').doc().id;
 
-    final materna = construirMaterna(draft, calendar);
+    final materna = construirMaterna(draft, calendar).copyWith(uid: uid);
     final maternaData = materna.toJson();
 
-    await FirebaseFirestore.instance
-        .collection('maternas')
+    await _firestore
+        .collection(_maternaCollection)
         .doc(uid)
         .set(maternaData, SetOptions(merge: false));
 

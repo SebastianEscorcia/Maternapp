@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -91,6 +92,12 @@ class MaternaProvider with ChangeNotifier {
       MaternaDraft draft, CalendarModel calendar) async {
     _isLoading = true;
     notifyListeners();
+    if (draft.uId == null || draft.uId!.isEmpty) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        draft.uId = user.uid;
+      }
+    }
     try {
       if (draft.uId != null && draft.uId!.isNotEmpty) {
         final existe = await _maternalService.obternerMaterna(draft.uId!);
