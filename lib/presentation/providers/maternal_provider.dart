@@ -51,6 +51,35 @@ class MaternaProvider with ChangeNotifier {
     setMaterna(materna);
   }
 
+  Future<void> actualizarFUMDesdeCalendario(BuildContext context) async {
+    if (_materna == null) return;
+
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
+    final nuevaFUM = calendarProvider.selectedDay;
+    final parto = calendarProvider.dueDate;
+    final semanas = calendarProvider.weeksPregnant;
+
+    if (nuevaFUM == null || parto == null) return;
+
+    // Actualizamos en memoria
+    _materna = _materna!.copyWith(
+      fum: nuevaFUM,
+      fechaEstimadaParto: parto,
+      semanasGestacion: semanas,
+    );
+
+    notifyListeners();
+
+    // Actualizamos en Firebase
+    await _maternalService.actualizarFUMyPartoEnMaterna(
+      uid: _materna!.uid,
+      nuevaFUM: nuevaFUM,
+      fechaEstimadaParto: parto,
+      semanasGestacion: semanas,
+    );
+  }
+
   void actualizarDatos({required double peso, required double estatura}) {
     if (_materna == null) return;
 
@@ -122,7 +151,10 @@ class MaternaProvider with ChangeNotifier {
   }
 
   Future<void> guardarCambiosMaternaFirebase(BuildContext context) async {
-    if (_materna == null) return;
+    if (_materna == null || _materna!.uid.isEmpty) {
+      if (kDebugMode) print("❌ No se puede guardar: UID de materna vacío.");
+      return;
+    }
 
     _isLoading = true;
     notifyListeners();

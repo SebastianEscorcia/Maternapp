@@ -69,6 +69,24 @@ class MaternalService {
     }
   }
 
+  Future<void> actualizarFUMyPartoEnMaterna({
+    required String uid,
+    required DateTime nuevaFUM,
+    required DateTime fechaEstimadaParto,
+    required int semanasGestacion,
+  }) async {
+    try {
+      await _firestore.collection(_maternaCollection).doc(uid).set({
+        'fum': nuevaFUM.toIso8601String(),
+        'fechaEstimadaParto': fechaEstimadaParto.toIso8601String(),
+        'semanasGestacion': semanasGestacion,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print("❌ Error actualizando FUM en materna: $e");
+      rethrow;
+    }
+  }
+
   Future<Materna?> obternerMaterna(String uid) async {
     final doc = await _firestore.collection(_maternaCollection).doc(uid).get();
     if (doc.exists) {
