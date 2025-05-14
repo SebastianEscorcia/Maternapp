@@ -48,7 +48,7 @@ class AuthProvider with ChangeNotifier {
       _user = user; // 🔥 aquí actualizas el usuario autenticado
       return user;
     } catch (e) {
-       print('🔥 Error al iniciar sesión: $e');
+      print('🔥 Error al iniciar sesión: $e');
       if (e.toString().contains('popup_closed')) {
         _userCancelledLogin = true;
         _errorMessage = '';
@@ -64,35 +64,56 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  
-
   Future<void> migrarMaternaSiExiste({
     required MaternaProvider maternaProvider,
   }) async {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    final uid = user.uid;
+    final uidGoogle = user.uid;
 
-    // Si ya hay una materna autenticada, no hay nada que migrar
-    final existente =
-        await FirebaseFirestore.instance.collection('maternas').doc(uid).get();
+    // ✅ Verificamos si ya hay una materna guardada en Firebase con este UID
+    final maternaFirebase = await FirebaseFirestore.instance
+        .collection('maternas')
+        .doc(uidGoogle)
+        .get();
 
-    if (existente.exists) return;
+    if (maternaFirebase.exists) {
+      // ✅ Ya existe, simplemente la cargamos
+      await maternaProvider.cargarMaternaFirebase(uidGoogle);
+      print(
+          "🔄 Materna ya registrada con UID de Google. Cargada correctamente.");
+      return;
+    }
 
-    // Si hay una materna local creada antes de iniciar sesión
+    // ⚠️ No existe en Firebase, intentamos migrar la local
     final maternaLocal = maternaProvider.materna;
-    if (maternaLocal == null) return;
+    if (maternaLocal == null) {
+      print("❗ No hay materna local para migrar.");
+      return;
+    }
 
-    // Migramos los datos y actualizamos el UID
-    final nuevaMaterna = maternaLocal.copyWith(uid: uid);
+    final uidTemporal = maternaLocal.uid;
+
+    // ✅ Migramos la materna local al nuevo UID
+    final maternaMigrada = maternaLocal.copyWith(uid: uidGoogle);
     await FirebaseFirestore.instance
         .collection('maternas')
-        .doc(uid)
-        .set(nuevaMaterna.toJson());
+        .doc(uidGoogle)
+        .set(maternaMigrada.toJson());
 
-    // actualizar el calendario si ya existe
-    maternaProvider.setMaterna(nuevaMaterna);
+    // ✅ Actualizamos el provider con la nueva materna
+    maternaProvider.setMaterna(maternaMigrada);
+    print("✅ Materna migrada del UID temporal al de Google.");
+
+    // ✅ Eliminamos el documento viejo si el UID anterior era distinto
+    if (uidTemporal.isNotEmpty && uidTemporal != uidGoogle) {
+      await FirebaseFirestore.instance
+          .collection('maternas')
+          .doc(uidTemporal)
+          .delete();
+      print("🗑️ Materna temporal eliminada con UID: $uidTemporal");
+    }
   }
 
   Future<void> signOut() async {

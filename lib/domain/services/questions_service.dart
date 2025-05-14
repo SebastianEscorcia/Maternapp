@@ -57,24 +57,28 @@ class QuestionService {
     required CalendarModel calendar,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
-    if ((draft.uId == null || draft.uId!.isEmpty) && user != null) {
-      draft.uId = user.uid;
+
+    // 🧬 Paso 1: Asignar UID a la materna
+    if ((draft.uId == null || draft.uId!.isEmpty)) {
+      draft.uId = user?.uid ??
+          FirebaseFirestore.instance.collection('maternas').doc().id;
+      print("🆕 UID asignado a la materna: ${draft.uId}");
     }
+
+    // 🔐 Validar fecha seleccionada
     if (calendar.selectedDay == null ||
         !calendarService.esFechaValida(calendar.selectedDay!)) {
       throw Exception("Fecha seleccionada inválida. Debe ser anterior a hoy.");
     }
 
-    // ✅ Calcula detalles (color, semanas, mensaje, etc.)
+    // 📅 Paso 2: Preparar y guardar calendario
     calendarService.calcularDetalles(calendar);
 
-    // ✅ GENERA UID SI ESTÁ VACÍO
     if (calendar.uId.isEmpty) {
       calendar.uId =
           FirebaseFirestore.instance.collection('calendars').doc().id;
     }
 
-    // 🔄 Guarda o actualiza calendario
     final calendarioExistente =
         await calendarService.obtenerCalendario(calendar.uId);
     if (calendarioExistente == null) {
@@ -83,32 +87,23 @@ class QuestionService {
       await calendarService.actualizarCalendario(calendar);
     }
 
-    // 🔄 Asigna ID del calendario al draft
     draft.calendarId = calendar.uId;
 
-    // 🔄 Guarda o actualiza la materna
-    String maternaUid;
-    if (draft.uId != null && draft.uId!.isNotEmpty) {
-      final maternaExistente =
-          await maternalService.obternerMaterna(draft.uId!);
-      if (maternaExistente != null) {
-        await maternalService.actualizarMaternaFirebase(draft, calendar);
-        maternaUid = draft.uId!;
-      } else {
-        maternaUid =
-            await maternalService.crearMaternaFirebase(draft, calendar);
-        draft.uId = maternaUid;
-      }
+    // 👩‍🍼 Paso 3: Guardar o actualizar materna
+    final maternaExistente = await maternalService.obternerMaterna(draft.uId!);
+    if (maternaExistente != null) {
+      await maternalService.actualizarMaternaFirebase(draft, calendar);
     } else {
-      maternaUid = await maternalService.crearMaternaFirebase(draft, calendar);
-      draft.uId = maternaUid;
+      final nuevoUid =
+          await maternalService.crearMaternaFirebase(draft, calendar);
+      draft.uId = nuevoUid;
     }
 
-    // 🔁 Asigna ID de materna al calendario y actualiza
-    calendar.maternaId = maternaUid;
+    // 🔗 Paso 4: Asignar calendario a la materna
+    calendar.maternaId = draft.uId!;
     await FirebaseFirestore.instance
         .collection('maternas')
-        .doc(maternaUid)
+        .doc(draft.uId!)
         .update({'calendarioId': calendar.uId});
     await calendarService.actualizarCalendario(calendar);
   }

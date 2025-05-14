@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../layout/layout_scaffold.dart';
 import '../../providers/Auth/auth_provider.dart';
@@ -44,33 +46,77 @@ class ProfileScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () async {
                         final user = await authProvider.signInWithGoogle();
-                        if (user != null) {
-                          await authProvider.migrarMaternaSiExiste(
-                            maternaProvider: Provider.of<MaternaProvider>(
-                                context,
-                                listen: false),
-                          );
 
-                          // Mostrar snackbar de éxito
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('✅ Sesión iniciada correctamente'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        } else if (authProvider.userCancelledLogin) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('❗ Inicio de sesión cancelado'),
-                            ),
-                          );
-                        } else if (authProvider.errorMesagge?.isNotEmpty ==
-                            true) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('❌ ${authProvider.errorMesagge}'),
-                            ),
-                          );
+                        if (user != null && context.mounted) {
+                          final maternaProvider = Provider.of<MaternaProvider>(
+                              context,
+                              listen: false);
+                          final prefs = await SharedPreferences.getInstance();
+                          final uid = user.uid;
+
+                          // Intentar cargar una materna existente con el UID de Google
+                          await maternaProvider.cargarMaternaFirebase(uid);
+
+                          if (maternaProvider.materna != null) {
+                            print("✅ Materna ya vinculada a Google, cargada.");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                      Text("✅ Sesión iniciada correctamente")),
+                            );
+                          } else {
+                            print(
+                                "ℹ️ No se encontró una materna con el UID de Google. Intentamos migrar.");
+
+                            final uidTemporal =
+                                prefs.getString('maternaTemporalUid');
+
+                            if (uidTemporal != null && uidTemporal.isNotEmpty) {
+                              await maternaProvider
+                                  .cargarMaternaFirebase(uidTemporal);
+
+                              if (maternaProvider.materna != null) {
+                                final nuevaMaterna =
+                                    maternaProvider.materna!.copyWith(uid: uid);
+                                await FirebaseFirestore.instance
+                                    .collection('maternas')
+                                    .doc(uid)
+                                    .set(nuevaMaterna.toJson());
+
+                                // ✅ Eliminar la materna temporal y limpiar preferencias
+                                await FirebaseFirestore.instance
+                                    .collection('maternas')
+                                    .doc(uidTemporal)
+                                    .delete();
+                                await prefs.remove('maternaTemporalUid');
+
+                                maternaProvider.setMaterna(nuevaMaterna);
+
+                                print(
+                                    "✅ Materna migrada del UID temporal al de Google.");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "🔄 Perfil vinculado con éxito.")),
+                                );
+                              } else {
+                                print(
+                                    "❌ No se pudo cargar la materna temporal.");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "❗ No se encontró perfil previo para migrar.")),
+                                );
+                              }
+                            } else {
+                              print("❌ No había UID temporal guardado.");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        "❗ No se encontró perfil previo para migrar.")),
+                              );
+                            }
+                          }
                         }
                       },
                       child: const Text("Iniciar sesión"),

@@ -56,6 +56,7 @@ Future<void> onFinalizar(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('maternaUid', draftProvider.draft.uId!);
     await prefs.setString('calendarioUid', calendarProvider.model.uId);
+    await prefs.setString('maternaTemporalUid', draftProvider.draft.uId!);
     await prefs.reload();
 
     Navigator.pop(context);

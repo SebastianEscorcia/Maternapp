@@ -70,6 +70,7 @@ class Materna {
     bool? esPrimerEmbarazo,
     String? tipoEmbarazo,
     bool? tieneAntecedentes,
+    String? calendarioId,
     String? uid,
   }) {
     return Materna(
@@ -84,6 +85,7 @@ class Materna {
       esPrimerEmbarazo: esPrimerEmbarazo ?? this.esPrimerEmbarazo,
       tipoEmbarazo: tipoEmbarazo ?? this.tipoEmbarazo,
       tieneAntecedentes: tieneAntecedentes ?? this.tieneAntecedentes,
+      calendarioId: calendarioId ?? this.calendarioId,
       uid: uid ?? this.uid,
     );
   }
