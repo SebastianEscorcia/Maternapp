@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,13 +52,24 @@ Future<void> manejarSeleccionDeFecha({
       );
       return;
     }
+    
+    if (draftProvider.draft.uId == null || draftProvider.draft.uId!.isEmpty) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        draftProvider.draft.uId = user.uid;
+      } else {
+        // UID temporal si no hay sesión
+        draftProvider.draft.uId =
+            FirebaseFirestore.instance.collection('maternas').doc().id;
+      }
+    }
 
     maternaProvider.crearMaterna(
       draft: draftProvider.draft,
       calendar: calendarProvider.model,
     );
     // Actualizamos la fecha de última menstruación (FUM) en Firebase y en el modelo de MaternaProvider
-     await maternaProvider.actualizarFUMDesdeCalendario(context);
+    await maternaProvider.actualizarFUMDesdeCalendario(context);
   }
 }
 
