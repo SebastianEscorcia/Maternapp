@@ -7,6 +7,7 @@ import '../../layout/layout_scaffold.dart';
 import '../../providers/Auth/auth_provider.dart';
 import '../../providers/maternal_provider.dart';
 import '../../providers/navigation_navbar_provider.dart';
+import '../../widgets/profileScreen/logout_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -199,7 +200,10 @@ class ProfileScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 40),
+            
+            const LogoutButton(),
           ],
+          
         ),
       ),
     );
