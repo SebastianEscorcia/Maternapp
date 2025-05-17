@@ -20,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
     return LayoutScaffold(
       title: "",
       centerContent: true,
-      backgroudColor: Color(0xFFFCE4EC),
+      useMaternalBackground: true,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

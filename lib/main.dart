@@ -16,6 +16,7 @@ import 'package:maternapp/Routes/routes.dart';
 import 'presentation/layout/main_scaffold_navbar.dart';
 import 'presentation/providers/materna_edit_provider.dart';
 import 'presentation/providers/maternal_provider.dart';
+import 'presentation/screens/SmartWatchs/select_wear_device_screen.dart';
 import 'presentation/screens/edit materna/edit_materna_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/questions/questions_screen.dart';
@@ -23,7 +24,7 @@ import 'presentation/screens/splash screen/splash_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
 import 'presentation/screens/vitals/vitals_screen.dart';
 import 'presentation/screens/welcome/welcome_screen.dart';
-import 'presentation/widgets/home/calendar/calendar_screen.dart';
+import 'presentation/screens/calendar/calendar_screen.dart';
 
 //Navigator key global para el auth provider
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -74,7 +75,8 @@ class MyApp extends StatelessWidget {
           if (materna != null) provider.cargarDesdeMaterna(materna);
           return const EditMaternaScreen();
         },
-        Routes.homeScreen: (context) => const HomeScreens()
+        Routes.homeScreen: (context) => const HomeScreens(),
+        Routes.SelectWearDeviceScreen : (context)  => const SelectWearDeviceScreen(),
       },
     );
   }

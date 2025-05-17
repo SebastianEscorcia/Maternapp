@@ -6,15 +6,15 @@ class LayoutScaffold extends StatelessWidget {
   final Widget? bottomNav;
   final bool showBack;
   final bool centerContent;
-  final Color? backgroudColor;
+  final bool useMaternalBackground;
   const LayoutScaffold({
-    this.backgroudColor,
     super.key,
     this.title = "",
     required this.child,
     this.bottomNav,
     this.showBack = false,
     this.centerContent = false,
+    this.useMaternalBackground = false,
   });
 
   @override
@@ -24,11 +24,22 @@ class LayoutScaffold extends StatelessWidget {
       child: centerContent ? Center(child: child) : child,
     );
 
+    final Widget bodyContent = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: SizedBox.expand(child: content),
+    );
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: useMaternalBackground
+          ? const Color(0xFFFDF6F8) // tono cálido claro profesional
+          : const Color(0xFFFFFFFF),
       appBar: title.isNotEmpty
           ? AppBar(
-              backgroundColor: const Color(0xFFFFF1F5),
+              backgroundColor: useMaternalBackground
+                  ? const Color(0xFFFDF6F8) // tono cálido claro profesional
+                  : const Color(0xFFFFFFFF),
               elevation: 0,
               automaticallyImplyLeading: showBack,
               iconTheme: const IconThemeData(color: Colors.pink),
@@ -43,18 +54,34 @@ class LayoutScaffold extends StatelessWidget {
               centerTitle: true,
             )
           : null,
-      body: SafeArea(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: content,
-        ),
+      body: Stack(
+        children: [
+          if (useMaternalBackground)
+            const _MaternalBackgroundLayer(), //Fondo maternal
+          SafeArea(child: bodyContent),
+        ],
       ),
       bottomNavigationBar: bottomNav != null
           ? Container(
-              color: Colors.white,
+              color: useMaternalBackground
+                  ? const Color(0xFFFDF6F8)
+                  : Colors.white,
               child: bottomNav,
             )
           : null,
+    );
+  }
+}
+
+class _MaternalBackgroundLayer extends StatelessWidget {
+  const _MaternalBackgroundLayer();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.expand(
+      child: ColoredBox(
+        color: Color(0xFFFDF6F8), // fondo profesional suave
+      ),
     );
   }
 }

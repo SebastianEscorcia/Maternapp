@@ -19,191 +19,221 @@ class ProfileScreen extends StatelessWidget {
     final bool needProfileCompletion = authProvider.needsProfileCompletion;
 
     return LayoutScaffold(
-      title: "Mi perfil 👤",
+      useMaternalBackground: true,
       centerContent: false,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// 🔐 Alerta si no ha iniciado sesión
-            if (!isLoggedIn || needProfileCompletion)
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.red[300],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning, color: Colors.white),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Text(
-                        'Regístrate o inicia sesión para guardar tus datos en la nube.',
-                        style: TextStyle(color: Colors.white),
-                      ),
+      title: "Mi perfil 🧍‍♀️",
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 🔐 Alerta si no ha iniciado sesión
+              if (!isLoggedIn || needProfileCompletion)
+                Card(
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Colors.pink.shade50,
+                      width: 2,
+                      style: BorderStyle.solid,
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final user = await authProvider.signInWithGoogle();
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  color: Colors.white,
+                  shadowColor: Colors.red.withAlpha(50),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.warning_amber_rounded,
+                            color: Colors.red),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text(
+                            'Regístrate o inicia sesión para guardar tus datos en la nube.',
+                            style: TextStyle(color: Colors.black87),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final user = await authProvider.signInWithGoogle();
+                            if (user != null && context.mounted) {
+                              final maternaProvider =
+                                  Provider.of<MaternaProvider>(
+                                      context,
+                                      listen: false);
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              final uid = user.uid;
 
-                        if (user != null && context.mounted) {
-                          final maternaProvider = Provider.of<MaternaProvider>(
-                              context,
-                              listen: false);
-                          final prefs = await SharedPreferences.getInstance();
-                          final uid = user.uid;
-
-                          // Intentar cargar una materna existente con el UID de Google
-                          await maternaProvider.cargarMaternaFirebase(uid);
-
-                          if (maternaProvider.materna != null) {
-                            print("✅ Materna ya vinculada a Google, cargada.");
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content:
-                                      Text("✅ Sesión iniciada correctamente")),
-                            );
-                          } else {
-                            print(
-                                "ℹ️ No se encontró una materna con el UID de Google. Intentamos migrar.");
-
-                            final uidTemporal =
-                                prefs.getString('maternaTemporalUid');
-
-                            if (uidTemporal != null && uidTemporal.isNotEmpty) {
                               await maternaProvider
-                                  .cargarMaternaFirebase(uidTemporal);
+                                  .cargarMaternaFirebase(uid);
 
                               if (maternaProvider.materna != null) {
-                                final nuevaMaterna =
-                                    maternaProvider.materna!.copyWith(uid: uid);
-                                await FirebaseFirestore.instance
-                                    .collection('maternas')
-                                    .doc(uid)
-                                    .set(nuevaMaterna.toJson());
-
-                                // ✅ Eliminar la materna temporal y limpiar preferencias
-                                await FirebaseFirestore.instance
-                                    .collection('maternas')
-                                    .doc(uidTemporal)
-                                    .delete();
-                                await prefs.remove('maternaTemporalUid');
-
-                                maternaProvider.setMaterna(nuevaMaterna);
-
-                                print(
-                                    "✅ Materna migrada del UID temporal al de Google.");
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          "🔄 Perfil vinculado con éxito.")),
+                                    content:
+                                        Text("✅ Sesión iniciada correctamente"),
+                                  ),
                                 );
                               } else {
-                                print(
-                                    "❌ No se pudo cargar la materna temporal.");
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "❗ No se encontró perfil previo para migrar.")),
-                                );
+                                final uidTemporal =
+                                    prefs.getString('maternaTemporalUid');
+
+                                if (uidTemporal != null &&
+                                    uidTemporal.isNotEmpty) {
+                                  await maternaProvider
+                                      .cargarMaternaFirebase(uidTemporal);
+
+                                  if (maternaProvider.materna != null) {
+                                    final nuevaMaterna = maternaProvider
+                                        .materna!
+                                        .copyWith(uid: uid);
+
+                                    await FirebaseFirestore.instance
+                                        .collection('maternas')
+                                        .doc(uid)
+                                        .set(nuevaMaterna.toJson());
+
+                                    await FirebaseFirestore.instance
+                                        .collection('maternas')
+                                        .doc(uidTemporal)
+                                        .delete();
+                                    await prefs.remove('maternaTemporalUid');
+
+                                    maternaProvider.setMaterna(nuevaMaterna);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "🔄 Perfil vinculado con éxito.")),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "❗ No se encontró perfil previo para migrar.")),
+                                    );
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "❗ No se encontró perfil previo para migrar.")),
+                                  );
+                                }
                               }
-                            } else {
-                              print("❌ No había UID temporal guardado.");
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        "❗ No se encontró perfil previo para migrar.")),
-                              );
                             }
-                          }
-                        }
-                      },
-                      child: const Text("Iniciar sesión"),
+                          },
+                          child: const Text("Iniciar sesión"),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+
+              const SizedBox(height: 20),
+
+              // 🧍‍♀️ Mis datos
+              Card(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Colors.pink.shade50,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: Colors.white,
+                child: ListTile(
+                  leading: const Icon(Icons.person_outline, color: Colors.pink),
+                  title: const Text("Mis datos"),
+                  subtitle: const Text("Editar peso, estatura, nombre..."),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/editMaterna');
+                  },
                 ),
               ),
 
-            ListTile(
-              leading: const Icon(Icons.person_outline, color: Colors.pink),
-              title: const Text("Mis datos"),
-              subtitle: const Text("Editar peso, estatura, nombre..."),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.pushNamed(context, '/editMaterna');
-              },
-            ),
+              const SizedBox(height: 30),
 
-            const SizedBox(height: 20),
-
-            /// ❤️ Vincular pareja o familiar
-            Text("Vincular con familiar",
-                style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Abrir flujo para generar código de vinculación o QR
-              },
-              icon: const Icon(Icons.group_add),
-              label: const Text("Vincular cuenta de pareja"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pink[300],
-                foregroundColor: Colors.white,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 📈 Signos vitales y alertas
-            Text("Salud en tiempo real",
-                style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              color: Colors.teal[50],
-              child: ListTile(
-                leading: const Icon(Icons.monitor_heart, color: Colors.teal),
-                title: const Text("Monitorear signos vitales"),
-                subtitle:
-                    const Text("Frecuencia cardíaca, oxigenación, temperatura"),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  //Navigator.pushNamed(context, '/vitals');
-                  //SOLUCIÓN PARA IR A SIGNOS VITALES
-                  final navProvider = Provider.of<NavigationNavbarProvider>(
-                      context,
-                      listen: false);
-                  navProvider.setIndex(4); //  "Signos" es el índice 4
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  //Provider.of<NavigationNavbarProvider>(context,listen: false).irAPestania(context, 4);
+              // ❤️ Vincular familiar
+              Text("Vincular con familiar",
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: flujo de vinculación
                 },
+                icon: const Icon(Icons.group_add),
+                label: const Text("Vincular cuenta de pareja"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pink[300],
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
-            /// 🎯 Objetivo (opcional)
-            Text("Mi objetivo", style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              children: [
-                ChoiceChip(
-                    label: const Text("Controlar embarazo"), selected: true),
-                ChoiceChip(
+              // 📈 Signos vitales
+              Text("Salud en tiempo real",
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              Card(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: Colors.teal.shade50,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color: Colors.white,
+                child: ListTile(
+                  leading: const Icon(Icons.monitor_heart, color: Colors.teal),
+                  title: const Text("Monitorear signos vitales"),
+                  subtitle: const Text(
+                      "Frecuencia cardíaca, oxigenación, temperatura"),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    final navProvider = Provider.of<NavigationNavbarProvider>(
+                        context,
+                        listen: false);
+                    navProvider.setIndex(4);
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // 🎯 Objetivo
+              Text("Mi objetivo",
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10,
+                children: [
+                  ChoiceChip(
+                    label: const Text("Controlar embarazo"),
+                    selected: true,
+                    selectedColor: Colors.pink[200],
+                  ),
+                  ChoiceChip(
                     label: const Text("Conectar con especialista"),
-                    selected: false),
-              ],
-            ),
+                    selected: false,
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 40),
-            
-            const LogoutButton(),
-          ],
-          
+              const SizedBox(height: 40),
+
+              // 🔓 Logout
+              const LogoutButton(),
+            ],
+          ),
         ),
       ),
     );

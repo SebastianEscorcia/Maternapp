@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../providers/maternal_draft_provider.dart';
 
 //CALENDARIO
-import '../../home/calendar/custom_table_calendar.dart';
+import '../../calendar/custom_table_calendar.dart';
 
 // Widgets de preguntas
 import '../dropdown_questions_card.dart';

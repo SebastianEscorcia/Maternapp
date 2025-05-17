@@ -171,7 +171,7 @@ class SplashScreen extends StatelessWidget {
           );
         }
 
-        // ✅ Redirige cuando termina el Future
+        //  Redirige cuando termina el Future
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushReplacementNamed(context, snapshot.data!);
         });

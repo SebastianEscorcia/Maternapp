@@ -29,7 +29,8 @@ class QuestionScreen extends StatelessWidget {
 
     return LayoutScaffold(
       showBack: false,
-      backgroudColor: const Color(0xFFFFF9FB),
+      useMaternalBackground: true,
+      centerContent: true,
       title: "Tu Perfil Materno",
       child: Stack(
         children: [

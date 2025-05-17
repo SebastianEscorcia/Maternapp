@@ -9,7 +9,7 @@ import '../screens/home/home_screens.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/tips/tips_screen.dart';
 import '../screens/vitals/vitals_screen.dart';
-import '../widgets/home/calendar/calendar_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 //button
 import '../widgets/home/navbar/botton_navbar.dart';
 

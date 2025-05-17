@@ -11,4 +11,5 @@ class Routes {
   static const String profileScreen = '/profile';
   static const String editMaternaScreen = '/editMaterna';
   static const String mainScaffoldNavbar = 'nav';
+  static const String SelectWearDeviceScreen  = '/selectWearDevice';
 }
