@@ -13,6 +13,7 @@ import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
 import '../../presentation/providers/navigation_navbar_provider.dart';
 import '../../presentation/providers/next_or_previous_questions_provider.dart';
+import '../../presentation/providers/sintomas/sintoma_provider.dart';
 
 class AppProviders {
   static List<SingleChildWidget> get obterProvider => [
@@ -30,6 +31,9 @@ class AppProviders {
         ChangeNotifierProvider(
           create: (_) => MotivationalMessageProvider(),
         ),
+
+        //Provider de Sintomras
+        ChangeNotifierProvider(create: (_) => SintomaProvider()),
 
         ChangeNotifierProxyProvider2<MaternalService, CalendarService,
             MaternaProvider>(

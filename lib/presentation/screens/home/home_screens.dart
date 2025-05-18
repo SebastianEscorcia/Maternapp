@@ -7,6 +7,8 @@ import 'package:maternapp/presentation/providers/maternal_provider.dart';
 import 'package:maternapp/presentation/layout/layout_scaffold.dart';
 import 'package:maternapp/presentation/widgets/texts/app_text.dart';
 
+import '../../widgets/sintoma/registrar_sintoma_buttom.dart';
+
 class HomeScreens extends StatelessWidget {
   const HomeScreens({super.key});
 
@@ -104,6 +106,9 @@ class HomeScreens extends StatelessWidget {
                   height: 160,
                   fit: BoxFit.contain,
                 ),
+
+               const SizedBox(height: 30),
+                const RegistrarSintomaButton(),
               ],
             ),
           ),
