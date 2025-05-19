@@ -132,7 +132,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
               const SizedBox(height: 20),
-
+              Text("Editar perfil",
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
               // 🧍‍♀️ Mis datos
               Card(
                 shape: RoundedRectangleBorder(
@@ -226,6 +228,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 30),
+              Text("Historial de síntomas",
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 10),
               const HistorialSintomasButton(),
               const SizedBox(height: 40),

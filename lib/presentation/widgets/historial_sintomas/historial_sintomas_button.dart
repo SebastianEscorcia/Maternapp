@@ -30,9 +30,8 @@ class HistorialSintomasButton extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 400),
             ),
           ).then((_){
-            // Limpiar el historial al volver a la pantalla anterior
             final provider = context.read<SintomaProvider>();  
-            provider.historialPorDia.clear();
+            provider.limpiarCacheHistorial();
           });
         },
       ),

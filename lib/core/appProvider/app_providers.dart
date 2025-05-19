@@ -13,6 +13,7 @@ import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
 import '../../presentation/providers/navigation_navbar_provider.dart';
 import '../../presentation/providers/next_or_previous_questions_provider.dart';
+import '../../presentation/providers/signal_vitals/signal_vital_provider.dart';
 import '../../presentation/providers/sintomas/sintoma_provider.dart';
 
 class AppProviders {
@@ -32,8 +33,11 @@ class AppProviders {
           create: (_) => MotivationalMessageProvider(),
         ),
 
-        //Provider de Sintomras
+        //Provider de Sintomas
         ChangeNotifierProvider(create: (_) => SintomaProvider()),
+
+        //Provider de Signos Vitales
+        ChangeNotifierProvider(create: (_) => SignosVitalesProvider()),
 
         ChangeNotifierProxyProvider2<MaternalService, CalendarService,
             MaternaProvider>(

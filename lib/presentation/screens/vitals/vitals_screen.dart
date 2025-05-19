@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/dialog_buttom_vitals/mostrar_dialog_selector.dart';
 import '../../layout/layout_scaffold.dart';
+import '../../providers/signal_vitals/signal_vital_provider.dart';
 import '../../widgets/vitals/vital_card.dart';
 import '../../providers/navigation_navbar_provider.dart';
 import '../../widgets/home/navbar/botton_navbar.dart';
@@ -13,6 +14,7 @@ class VitalsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final navProvider = Provider.of<NavigationNavbarProvider>(context);
     final isInsideMainFlow = ModalRoute.of(context)?.isFirst ?? false;
+    final signos = Provider.of<SignosVitalesProvider>(context).signos;
 
     return LayoutScaffold(
       useMaternalBackground: true,
@@ -47,6 +49,15 @@ class VitalsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              //TARJETA DE SIGNO VITAL DESDE SMARTWATCH
+              VitalCard(
+                icon: Icons.favorite_border,
+                title: "Frecuencia cardíaca",
+                value: signos != null
+                    ? "${signos.frecuenciaCardiaca} bpm"
+                    : "-- bpm",
+                color: Colors.redAccent,
+              ),
 
               // 💓 Frecuencia cardíaca
               VitalCard(
