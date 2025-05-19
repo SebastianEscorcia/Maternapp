@@ -115,6 +115,8 @@ class SeleccionarSintomasScreen extends StatelessWidget {
                                     materna.uid,
                                     nuevoSet.toList(),
                                   );
+                                  // Actualiza el estado
+                                  provider.limpiarCacheHistorial();
 
                                   if (context.mounted) {
                                     final snackBar = SnackBar(

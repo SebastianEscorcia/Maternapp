@@ -36,33 +36,31 @@ class SintomaProvider with ChangeNotifier {
     return _historialFuture!;
   }
 
-  //consultar síntomas del mes día por día
+  // Método para cargar el historial del mes
   Future<void> cargarHistorialDelMes(String maternaUid) async {
     final hoy = DateTime.now();
     final primerDia = DateTime(hoy.year, hoy.month, 1);
     final ultimoDia = DateTime(hoy.year, hoy.month + 1, 0);
 
+    final snapshot = await FirebaseFirestore.instance
+        .collection('registros_diarios')
+        .where('maternaUid', isEqualTo: maternaUid)
+        .get();
+
     _historialPorDia.clear();
 
-    for (int i = 0; i <= ultimoDia.difference(primerDia).inDays; i++) {
-      final fecha = primerDia.add(Duration(days: i));
-      final fechaId =
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final fecha = (data['fecha'] as Timestamp).toDate();
+
+      // Validar si la fecha está dentro del mes actual
+      if (fecha.isBefore(primerDia) || fecha.isAfter(ultimoDia)) continue;
+
+      final fechaStr =
           "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
 
-      final registroDoc = await _db
-          .collection('sintomas_diarios')
-          .doc(maternaUid)
-          .collection(fechaId)
-          .doc('registro')
-          .get();
-
-      if (registroDoc.exists) {
-        final data = registroDoc.data();
-        if (data != null) {
-          final sintomas = List<String>.from(data['sintomasIds'] ?? []);
-          _historialPorDia[fechaId] = sintomas;
-        }
-      }
+      final sintomas = List<String>.from(data['sintomasIds'] ?? []);
+      _historialPorDia[fechaStr] = sintomas;
     }
 
     notifyListeners();

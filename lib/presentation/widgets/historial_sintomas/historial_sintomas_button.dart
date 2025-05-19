@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../Routes/routes.dart';
+import '../../providers/sintomas/sintoma_provider.dart';
 import '../../screens/historial_sintomas/historial_sintomas_screen.dart';
 
 class HistorialSintomasButton extends StatelessWidget {
@@ -21,13 +23,17 @@ class HistorialSintomasButton extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             PageRouteBuilder(
-              pageBuilder: (_, __, ___) => const HistorialSintomasScreen(), // puedes usar directamente la ruta si lo deseas
+              pageBuilder: (_, __, ___) => const HistorialSintomasScreen(), 
               settings: const RouteSettings(name: Routes.historialSintomasScreen),
               transitionsBuilder: (_, animation, __, child) =>
                   FadeTransition(opacity: animation, child: child),
               transitionDuration: const Duration(milliseconds: 400),
             ),
-          );
+          ).then((_){
+            // Limpiar el historial al volver a la pantalla anterior
+            final provider = context.read<SintomaProvider>();  
+            provider.historialPorDia.clear();
+          });
         },
       ),
     );

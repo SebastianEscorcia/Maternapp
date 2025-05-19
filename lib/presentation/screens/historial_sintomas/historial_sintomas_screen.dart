@@ -31,9 +31,6 @@ class HistorialSintomasScreen extends StatelessWidget {
               child: Text("No hay síntomas registrados este mes"),
             );
           }
-          print("IDs del catálogo: ${provider.catalogo.map((s) => s.id)}");
-          print(
-              "IDs en historial: ${provider.historialPorDia.values.expand((l) => l)}");
 
           final Map<String, int> frecuencia = {};
           for (final sintomas in historial.values) {
@@ -43,30 +40,39 @@ class HistorialSintomasScreen extends StatelessWidget {
           }
 
           final total = frecuencia.values.fold(0, (a, b) => a + b);
+          
+          final historialOrdenado = historial.entries.toList()
 
+            ..sort((a, b) => b.key.compareTo(a.key));
           return SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 16),
-                const Text("Síntomas registrados por día",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    textAlign: TextAlign.center),
-                ...historial.entries.map((entry) => Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      child: ListTile(
-                        title: Text(entry.key),
-                        subtitle: Text(entry.value
-                            .map((id) => provider.nombreSintomaPorId(id))
-                            .join(', ')),
-                      ),
-                    )),
+                const Text(
+                  "Síntomas registrados por día",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                ...historialOrdenado
+                    .map((entry) => Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          child: ListTile(
+                            title: Text(entry.key),
+                            subtitle: Text(entry.value
+                                .map((id) => provider.nombreSintomaPorId(id))
+                                .join(', ')),
+                          ),
+                        ))
+                    .toList(),
                 const SizedBox(height: 16),
-                const Text("Estadísticas del mes",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    textAlign: TextAlign.center),
+                const Text(
+                  "Estadísticas del mes",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
                 AspectRatio(
                   aspectRatio: 1.3,
                   child: PieChart(
@@ -79,7 +85,9 @@ class HistorialSintomasScreen extends StatelessWidget {
                           color: provider.colorSintomaPorId(entry.key),
                           radius: 80,
                           titleStyle: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         );
                       }).toList(),
                     ),

@@ -7,38 +7,36 @@ class SintomasDiariosService {
 
   Future<void> registrarSintomasHoy(
       String maternaUid, List<String> sintomasIds) async {
-    final fechaHoy = DateTime.now();
-    final idFecha = _formatoFecha(fechaHoy);
+    final now = DateTime.now();
+    final fechaStr =
+        "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    final docId = "${maternaUid}_$fechaStr";
 
-    final docRef = _db
-        .collection('sintomas_diarios')
-        .doc(maternaUid)
-        .collection(idFecha)
-        .doc('registro');
+    final docRef =
+        FirebaseFirestore.instance.collection('registros_diarios').doc(docId);
 
     await docRef.set({
-      'fecha': fechaHoy.toIso8601String(),
+      'maternaUid': maternaUid,
+      'fecha': Timestamp.now(),
       'sintomasIds': sintomasIds,
     });
   }
 
   Future<RegistroSintomasDiarios> obtenerSintomasHoy(String maternaUid) async {
-    final idFecha = _formatoFecha(DateTime.now());
+    final now = DateTime.now();
+    final fechaStr = _formatoFecha(now);
+    // Formato de fecha: YYYY-MM-DD
+    final docId = "${maternaUid}_$fechaStr";
 
-    final docRef = _db
-        .collection('sintomas_diarios')
-        .doc(maternaUid)
-        .collection(idFecha)
-        .doc('registro');
-
+    final docRef = _db.collection('registros_diarios').doc(docId);
     final doc = await docRef.get();
 
     if (!doc.exists) {
       final data = {
-        'fecha': Timestamp.now(),
+        'maternaUid': maternaUid,
+        'fecha': Timestamp.fromDate(now),
         'sintomasIds': <String>[],
       };
-
       await docRef.set(data);
       return RegistroSintomasDiarios.fromMap(docRef.id, data);
     }
@@ -110,7 +108,7 @@ class SintomasDiariosService {
         "nombre": "Feliz",
         "categoria": "Estado de ánimo",
         "icono": "sentiment_satisfied_alt",
-        "color": "#4CAF50"
+        "color": "#F3F20EFF"
       },
       {
         "nombre": "Triste",

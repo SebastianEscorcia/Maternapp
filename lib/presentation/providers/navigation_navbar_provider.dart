@@ -9,10 +9,11 @@ class NavigationNavbarProvider with ChangeNotifier {
     _currentIndex = index;
     notifyListeners();
   }
+
   void irAPestania(BuildContext context, int index) {
-  if (_currentIndex != index) {
-    setIndex(index);
+    if (_currentIndex != index) {
+      setIndex(index);
+    }
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
-  Navigator.of(context).popUntil((route) => route.isFirst);
-}
 }
