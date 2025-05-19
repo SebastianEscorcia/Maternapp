@@ -16,8 +16,10 @@ import 'package:maternapp/Routes/routes.dart';
 import 'presentation/layout/main_scaffold_navbar.dart';
 import 'presentation/providers/materna_edit_provider.dart';
 import 'presentation/providers/maternal_provider.dart';
+import 'presentation/providers/sintomas/sintoma_provider.dart';
 import 'presentation/screens/SmartWatchs/select_wear_device_screen.dart';
 import 'presentation/screens/edit materna/edit_materna_screen.dart';
+import 'presentation/screens/historial_sintomas/historial_sintomas_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/questions/questions_screen.dart';
 import 'presentation/screens/splash screen/splash_screen.dart';
@@ -76,7 +78,15 @@ class MyApp extends StatelessWidget {
           return const EditMaternaScreen();
         },
         Routes.homeScreen: (context) => const HomeScreens(),
-        Routes.SelectWearDeviceScreen : (context)  => const SelectWearDeviceScreen(),
+        Routes.selectWearDeviceScreen : (context)  => const SelectWearDeviceScreen(),
+        Routes.historialSintomasScreen: (context) {
+          final provider =
+              Provider.of<SintomaProvider>(context, listen: false);
+          final materna =
+              Provider.of<MaternaProvider>(context, listen: false).materna;
+          if (materna != null) provider.cargarHistorialDelMes(materna.uid);
+          return const HistorialSintomasScreen();
+        },
       },
     );
   }

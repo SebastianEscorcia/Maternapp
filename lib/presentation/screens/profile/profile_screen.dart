@@ -7,6 +7,7 @@ import '../../layout/layout_scaffold.dart';
 import '../../providers/Auth/auth_provider.dart';
 import '../../providers/maternal_provider.dart';
 import '../../providers/navigation_navbar_provider.dart';
+import '../../widgets/historial_sintomas/historial_sintomas_button.dart';
 import '../../widgets/profileScreen/logout_button.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -59,15 +60,13 @@ class ProfileScreen extends StatelessWidget {
                             final user = await authProvider.signInWithGoogle();
                             if (user != null && context.mounted) {
                               final maternaProvider =
-                                  Provider.of<MaternaProvider>(
-                                      context,
+                                  Provider.of<MaternaProvider>(context,
                                       listen: false);
                               final prefs =
                                   await SharedPreferences.getInstance();
                               final uid = user.uid;
 
-                              await maternaProvider
-                                  .cargarMaternaFirebase(uid);
+                              await maternaProvider.cargarMaternaFirebase(uid);
 
                               if (maternaProvider.materna != null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -227,7 +226,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
+              const SizedBox(height: 10),
+              const HistorialSintomasButton(),
               const SizedBox(height: 40),
 
               // 🔓 Logout

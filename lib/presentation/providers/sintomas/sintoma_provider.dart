@@ -18,41 +18,56 @@ class SintomaProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get guardandoSeleccion => _guardandoSeleccion;
 
-  /// Historial de síntomas por día
-  // Se usa para mostrar el historial de síntomas en la pantalla de selección
   final Map<String, List<String>> _historialPorDia = {};
   Map<String, List<String>> get historialPorDia => _historialPorDia;
 
-  /// Cargar historial del mes actual
+  //future para evitar múltiples cargas
+  Future<void>? _historialFuture;
+  Future<void>? get historialFuture => _historialFuture;
+
+  // Método de cacheado de historial
+  Future<void> cargarHistorialDelMesConCache(String maternaUid) {
+    _historialFuture ??= () async {
+      if (_catalogo.isEmpty) {
+        await cargarCatalogo();
+      }
+      await cargarHistorialDelMes(maternaUid);
+    }();
+    return _historialFuture!;
+  }
+
+  //consultar síntomas del mes día por día
   Future<void> cargarHistorialDelMes(String maternaUid) async {
     final hoy = DateTime.now();
     final primerDia = DateTime(hoy.year, hoy.month, 1);
     final ultimoDia = DateTime(hoy.year, hoy.month + 1, 0);
 
-    final snapshot = await FirebaseFirestore.instance
-        .collectionGroup('registro')
-        .where('fecha', isGreaterThanOrEqualTo: primerDia)
-        .where('fecha', isLessThanOrEqualTo: ultimoDia)
-        .get();
-
     _historialPorDia.clear();
 
-    for (final doc in snapshot.docs) {
-      final data = doc.data();
-      final fecha = DateTime.parse(data['fecha']);
-      if (fecha.isAfter(primerDia.subtract(const Duration(days: 1))) &&
-          fecha.isBefore(ultimoDia.add(const Duration(days: 1)))) {
-        final fechaStr =
-            "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
-        final sintomas = List<String>.from(data['sintomasIds'] ?? []);
-        _historialPorDia[fechaStr] = sintomas;
+    for (int i = 0; i <= ultimoDia.difference(primerDia).inDays; i++) {
+      final fecha = primerDia.add(Duration(days: i));
+      final fechaId =
+          "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
+
+      final registroDoc = await _db
+          .collection('sintomas_diarios')
+          .doc(maternaUid)
+          .collection(fechaId)
+          .doc('registro')
+          .get();
+
+      if (registroDoc.exists) {
+        final data = registroDoc.data();
+        if (data != null) {
+          final sintomas = List<String>.from(data['sintomasIds'] ?? []);
+          _historialPorDia[fechaId] = sintomas;
+        }
       }
     }
 
     notifyListeners();
   }
 
-  /// Buscar nombre del síntoma a partir de su ID
   String nombreSintomaPorId(String id) {
     return _catalogo
         .firstWhere((s) => s.id == id,
@@ -65,7 +80,18 @@ class SintomaProvider with ChangeNotifier {
         .nombre;
   }
 
-  /// Cargar catálogo desde Firebase
+  Color colorSintomaPorId(String id) {
+    return _catalogo
+        .firstWhere((s) => s.id == id,
+            orElse: () => SintomaVisual(
+                id: "desconocido",
+                categoria: 'Otros',
+                nombre: 'Desconocido',
+                icono: Icons.help,
+                color: Colors.grey))
+        .color;
+  }
+
   Future<void> cargarCatalogo() async {
     try {
       final snapshot = await _db.collection('catalogo_sintomas').get();
@@ -79,7 +105,6 @@ class SintomaProvider with ChangeNotifier {
     }
   }
 
-  /// Cargar selección del día
   Future<void> cargarSintomasDeHoy(String maternaUid) async {
     _isLoading = true;
     notifyListeners();
@@ -90,7 +115,6 @@ class SintomaProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Actualizar síntomas seleccionados del día SIN recargar todo el widget
   Future<void> actualizarSintomasDeHoy(
       String maternaUid, List<String> sintomasIds) async {
     _guardandoSeleccion = true;
@@ -105,15 +129,13 @@ class SintomaProvider with ChangeNotifier {
     );
 
     _guardandoSeleccion = false;
-    notifyListeners(); // Esto actualiza solo lo necesario
+    notifyListeners();
   }
 
-  /// Saber si un síntoma está seleccionado hoy
   bool estaSeleccionadoHoy(String sintomaId) {
     return _registroHoy?.sintomasIds.contains(sintomaId) ?? false;
   }
 
-  /// Obtener síntomas agrupados por categoría
   Map<String, List<SintomaVisual>> get sintomasPorCategoria {
     final mapa = <String, List<SintomaVisual>>{};
     for (var sintoma in _catalogo) {
@@ -129,5 +151,10 @@ class SintomaProvider with ChangeNotifier {
     if (_registroHoy == null) {
       await cargarSintomasDeHoy(maternaUid);
     }
+  }
+
+  // Resetear el historial  recarga manual
+  void limpiarCacheHistorial() {
+    _historialFuture = null;
   }
 }
