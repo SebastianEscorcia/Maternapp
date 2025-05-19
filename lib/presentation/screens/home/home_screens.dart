@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,7 +32,8 @@ class HomeScreens extends StatelessWidget {
       builder: (context, snapshot) {
         final materna = context.watch<MaternaProvider>().materna;
 
-        if (snapshot.connectionState != ConnectionState.done || materna == null) {
+        if (snapshot.connectionState != ConnectionState.done ||
+            materna == null) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -57,11 +59,11 @@ class HomeScreens extends StatelessWidget {
 
                 // 📋 Datos
                 Card(
-
                   elevation: 3,
                   shape: RoundedRectangleBorder(
-                    side:  BorderSide(
-                      color: Colors.pink.shade50, width: 2,
+                    side: BorderSide(
+                      color: Colors.pink.shade50,
+                      width: 2,
                       style: BorderStyle.solid,
                     ),
                     borderRadius: BorderRadius.circular(16),
@@ -72,7 +74,6 @@ class HomeScreens extends StatelessWidget {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
                         // Nombre
                         _infoRow(Icons.cake, 'Edad', '${materna.edad} años'),
@@ -99,15 +100,25 @@ class HomeScreens extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // 📷 Imagen branding
-                Image.asset(
-                  'assets/images/maternapp.png',
-                  width: 160,
-                  height: 160,
-                  fit: BoxFit.contain,
+                // Animación
+                Container(
+                  width: 220,
+                  height: 220,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.pink[50],
+                  ),
+                  child: Center(
+                    child: Lottie.asset(
+                      'assets/animations/women_pregnant.json',
+                      width: 200,
+                      repeat: true,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
 
-               const SizedBox(height: 30),
+                const SizedBox(height: 30),
                 const RegistrarSintomaButton(),
               ],
             ),

@@ -1,30 +1,33 @@
-class Sintoma {
-  final String id;
-  final String descripcion;
-  final DateTime fecha;
-  final String maternaUid;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  Sintoma({
+class RegistroSintomasDiarios {
+  final String id;
+  final DateTime fecha;
+  final List<String> sintomasIds;
+
+  RegistroSintomasDiarios({
     required this.id,
-    required this.descripcion,
     required this.fecha,
-    required this.maternaUid,
+    required this.sintomasIds,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'descripcion': descripcion,
       'fecha': fecha.toIso8601String(),
-      'maternaUid': maternaUid,
+      'sintomasIds': sintomasIds,
     };
   }
 
-  factory Sintoma.fromMap(String id, Map<String, dynamic> map) {
-    return Sintoma(
+  factory RegistroSintomasDiarios.fromMap(String id, Map<String, dynamic> map) {
+    return RegistroSintomasDiarios(
       id: id,
-      descripcion: map['descripcion'] ?? '',
-      fecha: DateTime.parse(map['fecha']),
-      maternaUid: map['maternaUid'],
+      //si viene como Timestamp de Firestore, lo convierte con .toDate(). Si es String, intenta convertirlo con DateTime.tryParse(...). Si falla, usa DateTime.now().
+      fecha: map['fecha'] is Timestamp
+          ? (map['fecha'] as Timestamp).toDate()
+          : DateTime.tryParse(map['fecha'] ?? '') ?? DateTime.now(),
+      sintomasIds: map['sintomasIds'] != null
+          ? List<String>.from(map['sintomasIds'])
+          : <String>[],
     );
   }
 }

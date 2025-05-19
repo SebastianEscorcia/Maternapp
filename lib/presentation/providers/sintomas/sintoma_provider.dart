@@ -1,105 +1,133 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../data/models/sintoma.dart';
 import '../../../domain/services/sintomas/sintomas_services.dart';
 import '../../widgets/sintoma/sintoma_visual.dart';
 
 class SintomaProvider with ChangeNotifier {
-  final SintomaService _service = SintomaService();
+  final SintomasDiariosService _service = SintomasDiariosService();
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  List<Sintoma> _sintomas = [];
+  List<SintomaVisual> _catalogo = [];
+  RegistroSintomasDiarios? _registroHoy;
   bool _isLoading = false;
+  bool _guardandoSeleccion = false;
 
-  List<Sintoma> get sintomas => _sintomas;
+  List<SintomaVisual> get catalogo => _catalogo;
+  RegistroSintomasDiarios? get registroHoy => _registroHoy;
   bool get isLoading => _isLoading;
+  bool get guardandoSeleccion => _guardandoSeleccion;
 
-  Future<void> cargarSintomasDeMaterna(String maternaUid) async {
+  /// Historial de síntomas por día
+  // Se usa para mostrar el historial de síntomas en la pantalla de selección
+  final Map<String, List<String>> _historialPorDia = {};
+  Map<String, List<String>> get historialPorDia => _historialPorDia;
+
+  /// Cargar historial del mes actual
+  Future<void> cargarHistorialDelMes(String maternaUid) async {
+    final hoy = DateTime.now();
+    final primerDia = DateTime(hoy.year, hoy.month, 1);
+    final ultimoDia = DateTime(hoy.year, hoy.month + 1, 0);
+
+    final snapshot = await FirebaseFirestore.instance
+        .collectionGroup('registro')
+        .where('fecha', isGreaterThanOrEqualTo: primerDia)
+        .where('fecha', isLessThanOrEqualTo: ultimoDia)
+        .get();
+
+    _historialPorDia.clear();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final fecha = DateTime.parse(data['fecha']);
+      if (fecha.isAfter(primerDia.subtract(const Duration(days: 1))) &&
+          fecha.isBefore(ultimoDia.add(const Duration(days: 1)))) {
+        final fechaStr =
+            "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
+        final sintomas = List<String>.from(data['sintomasIds'] ?? []);
+        _historialPorDia[fechaStr] = sintomas;
+      }
+    }
+
+    notifyListeners();
+  }
+
+  /// Buscar nombre del síntoma a partir de su ID
+  String nombreSintomaPorId(String id) {
+    return _catalogo
+        .firstWhere((s) => s.id == id,
+            orElse: () => SintomaVisual(
+                id: "Desconocido",
+                categoria: 'Otros',
+                nombre: 'Desconocido',
+                icono: Icons.help,
+                color: Colors.grey))
+        .nombre;
+  }
+
+  /// Cargar catálogo desde Firebase
+  Future<void> cargarCatalogo() async {
+    try {
+      final snapshot = await _db.collection('catalogo_sintomas').get();
+      _catalogo = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return SintomaVisual.fromFirestore(doc.id, data);
+      }).toList();
+      notifyListeners();
+    } catch (e) {
+      print("Error al cargar catálogo: $e");
+    }
+  }
+
+  /// Cargar selección del día
+  Future<void> cargarSintomasDeHoy(String maternaUid) async {
     _isLoading = true;
     notifyListeners();
 
-    _sintomas = await _service.obtenerSintomasDeMaterna(maternaUid);
+    _registroHoy = await _service.obtenerSintomasHoy(maternaUid);
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> registrarSintoma(Sintoma sintoma) async {
-    await _service.registrarSintoma(sintoma);
-    await cargarSintomasDeMaterna(sintoma.maternaUid);
+  /// Actualizar síntomas seleccionados del día SIN recargar todo el widget
+  Future<void> actualizarSintomasDeHoy(
+      String maternaUid, List<String> sintomasIds) async {
+    _guardandoSeleccion = true;
+    notifyListeners();
+
+    await _service.registrarSintomasHoy(maternaUid, sintomasIds);
+
+    _registroHoy = RegistroSintomasDiarios(
+      id: maternaUid,
+      fecha: DateTime.now(),
+      sintomasIds: sintomasIds,
+    );
+
+    _guardandoSeleccion = false;
+    notifyListeners(); // Esto actualiza solo lo necesario
   }
 
-  Sintoma? get ultimoSintoma => _sintomas.isNotEmpty ? _sintomas.first : null;
+  /// Saber si un síntoma está seleccionado hoy
+  bool estaSeleccionadoHoy(String sintomaId) {
+    return _registroHoy?.sintomasIds.contains(sintomaId) ?? false;
+  }
 
-  final Map<String, List<SintomaVisual>> sintomasVisualesPorCategoria = {
-    "Síntomas físicos": [
-      SintomaVisual(nombre: "Náuseas", icono: Icons.sick, color: Colors.orange),
-      SintomaVisual(
-          nombre: "Dolor abdominal",
-          icono: Icons.crisis_alert,
-          color: Colors.redAccent),
-      SintomaVisual(
-          nombre: "Dolor de cabeza",
-          icono: Icons.headphones,
-          color: Colors.purple),
-      SintomaVisual(
-          nombre: "Cansancio", icono: Icons.bedtime, color: Colors.indigo),
-      SintomaVisual(
-          nombre: "Insomnio",
-          icono: Icons.nightlight_round,
-          color: Colors.teal),
-      SintomaVisual(
-          nombre: "Somnolencia", icono: Icons.bed, color: Colors.blueGrey),
-      SintomaVisual(
-          nombre: "Pechos sensibles",
-          icono: Icons.favorite_border,
-          color: Colors.pinkAccent),
-    ],
-    "Estado de ánimo": [
-      SintomaVisual(
-          nombre: "Ansiedad", icono: Icons.mood_bad, color: Colors.red),
-      SintomaVisual(
-          nombre: "Feliz",
-          icono: Icons.sentiment_satisfied_alt,
-          color: Colors.green),
-      SintomaVisual(
-          nombre: "Triste",
-          icono: Icons.sentiment_dissatisfied,
-          color: Colors.blueGrey),
-      SintomaVisual(
-          nombre: "Irritada",
-          icono: Icons.warning_amber,
-          color: Colors.deepOrange),
-      SintomaVisual(
-          nombre: "Con energía", icono: Icons.bolt, color: Colors.amber),
-      SintomaVisual(
-          nombre: "Deprimida", icono: Icons.cloud, color: Colors.grey),
-    ],
-    "Digestión": [
-      SintomaVisual(
-          nombre: "Estreñimiento", icono: Icons.block, color: Colors.brown),
-      SintomaVisual(
-          nombre: "Diarrea", icono: Icons.water_drop, color: Colors.cyan),
-      SintomaVisual(
-          nombre: "Acidez",
-          icono: Icons.local_fire_department,
-          color: Colors.deepOrangeAccent),
-      SintomaVisual(
-          nombre: "Vómitos",
-          icono: Icons.sync_problem,
-          color: Colors.greenAccent),
-    ]
-  };
-
-  Future<void> eliminarSintomaPorDescripcion({
-    required String uid,
-    required String descripcion,
-  }) async {
-    final sintomasAEliminar =
-        _sintomas.where((s) => s.descripcion == descripcion).toList();
-
-    for (final s in sintomasAEliminar) {
-      await _service.eliminarSintoma(s.id, uid); 
+  /// Obtener síntomas agrupados por categoría
+  Map<String, List<SintomaVisual>> get sintomasPorCategoria {
+    final mapa = <String, List<SintomaVisual>>{};
+    for (var sintoma in _catalogo) {
+      mapa.putIfAbsent(sintoma.categoria, () => []).add(sintoma);
     }
+    return mapa;
+  }
 
-    await cargarSintomasDeMaterna(uid);
+  Future<void> inicializarDatosSiNecesario(String maternaUid) async {
+    if (_catalogo.isEmpty) {
+      await cargarCatalogo();
+    }
+    if (_registroHoy == null) {
+      await cargarSintomasDeHoy(maternaUid);
+    }
   }
 }

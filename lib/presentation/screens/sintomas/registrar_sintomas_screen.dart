@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../data/models/sintoma.dart';
 import '../../providers/maternal_provider.dart';
 import '../../providers/sintomas/sintoma_provider.dart';
 import '../../layout/layout_scaffold.dart';
+import 'package:flutter/services.dart';
 
 class SeleccionarSintomasScreen extends StatelessWidget {
   const SeleccionarSintomasScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final sintomasPorCategoria =
-        context.watch<SintomaProvider>().sintomasVisualesPorCategoria;
+    final provider = context.watch<SintomaProvider>();
+    final materna = context.read<MaternaProvider>().materna;
 
-    final provider = Provider.of<SintomaProvider>(context);
-    final materna = Provider.of<MaternaProvider>(context).materna;
+    if (materna != null &&
+        (provider.catalogo.isEmpty || provider.registroHoy == null)) {
+      Future.microtask(() => provider.inicializarDatosSiNecesario(materna.uid));
+    }
 
-    final selected = provider.sintomas.map((s) => s.descripcion).toSet();
+    if (provider.catalogo.isEmpty || provider.isLoading || materna == null) {
+      return const LayoutScaffold(
+        useMaternalBackground: true,
+        showBack: true,
+        centerContent: true,
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    final sintomasSeleccionados = Set<String>.from(
+      provider.registroHoy?.sintomasIds ?? [],
+    );
 
     return LayoutScaffold(
       title: "Seleccionar síntomas",
@@ -38,7 +51,8 @@ class SeleccionarSintomasScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Expanded(
               child: ListView(
-                children: sintomasPorCategoria.entries.map((categoria) {
+                children:
+                    provider.sintomasPorCategoria.entries.map((categoria) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -57,8 +71,9 @@ class SeleccionarSintomasScreen extends StatelessWidget {
                         children: categoria.value.map((sintoma) {
                           return StatefulBuilder(
                             builder: (context, setState) {
-                              final isSelected =
-                                  selected.contains(sintoma.nombre);
+                              bool isSelected =
+                                  sintomasSeleccionados.contains(sintoma.id);
+
                               return ChoiceChip(
                                 label: Text(sintoma.nombre),
                                 avatar: Icon(
@@ -83,30 +98,61 @@ class SeleccionarSintomasScreen extends StatelessWidget {
                                   ),
                                 ),
                                 onSelected: (_) async {
-                                  setState(() {
-                                    if (isSelected) {
-                                      selected.remove(sintoma.nombre);
-                                    } else {
-                                      selected.add(sintoma.nombre);
-                                    }
-                                  });
+                                  final nuevoSet = {...sintomasSeleccionados};
+                                  final fueSeleccionado = !isSelected;
 
-                                  if (materna != null) {
-                                    if (isSelected) {
-                                      await provider
-                                          .eliminarSintomaPorDescripcion(
-                                        uid: materna.uid,
-                                        descripcion: sintoma.nombre,
-                                      );
-                                    } else {
-                                      final nuevo = Sintoma(
-                                        id: '',
-                                        descripcion: sintoma.nombre,
-                                        fecha: DateTime.now(),
-                                        maternaUid: materna.uid,
-                                      );
-                                      await provider.registrarSintoma(nuevo);
-                                    }
+                                  if (isSelected) {
+                                    nuevoSet.remove(sintoma.id);
+                                    HapticFeedback
+                                        .mediumImpact(); // ❌ Eliminado
+                                  } else {
+                                    nuevoSet.add(sintoma.id);
+                                    HapticFeedback
+                                        .lightImpact(); // ✅ Registrado
+                                  }
+
+                                  await provider.actualizarSintomasDeHoy(
+                                    materna.uid,
+                                    nuevoSet.toList(),
+                                  );
+
+                                  if (context.mounted) {
+                                    final snackBar = SnackBar(
+                                      content: Row(
+                                        children: [
+                                          Icon(
+                                            fueSeleccionado
+                                                ? Icons.check_circle_outline
+                                                : Icons.cancel_outlined,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              fueSeleccionado
+                                                  ? "Síntoma registrado con éxito"
+                                                  : "Síntoma eliminado",
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      backgroundColor: fueSeleccionado
+                                          ? Colors.green
+                                          : Colors.redAccent,
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      duration: const Duration(seconds: 2),
+                                      elevation: 6,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 12),
+                                    );
+
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
                                   }
                                 },
                               );
@@ -120,6 +166,18 @@ class SeleccionarSintomasScreen extends StatelessWidget {
                 }).toList(),
               ),
             ),
+            if (provider.guardandoSeleccion)
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: LinearProgressIndicator(
+                    minHeight: 4,
+                    backgroundColor: Colors.white,
+                    color: Colors.pink,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
