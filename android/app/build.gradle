@@ -11,15 +11,15 @@ plugins {
 android {
     namespace = "com.example.maternapp"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13113456"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_11
     }
 
     defaultConfig {
@@ -27,21 +27,38 @@ android {
         applicationId = "com.example.maternapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+        signingConfigs {
+        create("release") {
+            storeFile = file("../kys.jks")
+            storePassword = "123456"
+            keyAlias = "kysalias"
+            keyPassword = "123456"
+        }
+    }
+
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            // Opcional: Configuraciones adicionales para el build de release
+            //isMinifyEnabled = true // Habilita la minificación
+            //isShrinkResources = true // Habilita la reducción de recursos
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation ("com.google.android.gms:play-services-wearable:18.0.0")
 }

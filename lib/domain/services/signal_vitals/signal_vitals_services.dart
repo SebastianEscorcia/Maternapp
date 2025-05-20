@@ -6,12 +6,11 @@ import '../../../data/models/signal_vital/signal_vital_model.dart';
 import '../smartwatch/smartwatch_services.dart';
 
 class SignosVitalesService {
-  static const platform = MethodChannel('smartwatch_channel');
   final SmartwatchServices _smartwatch = SmartwatchServices();
 
   Future<SignosVitales> obtenerSignosDesdeSmartwatch() async {
     try {
-      final result = await platform.invokeMethod<Map>('obtenerSignosVitales');
+      final result = await _smartwatch.obtenerSignosVitales();
       return SignosVitales.fromJson(Map<String, dynamic>.from(result!));
     } catch (e) {
       log("Error al obtener signos vitales: $e");
