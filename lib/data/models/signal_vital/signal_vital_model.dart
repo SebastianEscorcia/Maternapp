@@ -1,6 +1,6 @@
 class SignosVitales {
   final String maternaId;
-  final int frecuenciaCardiaca;
+  final String frecuenciaCardiaca;
   final double temperatura;
   final int oxigenacion;
   final DateTime fecha;
@@ -12,13 +12,21 @@ class SignosVitales {
     required this.oxigenacion,
     required this.fecha,
   });
+  SignosVitales.empty(String f)
+      : maternaId = '',
+        frecuenciaCardiaca = f,
+        temperatura = 0.0,
+        oxigenacion = 0,
+        fecha = DateTime.now();
 
   factory SignosVitales.fromJson(Map<String, dynamic> json) {
     return SignosVitales(
       maternaId: json['maternaId'],
-      frecuenciaCardiaca: json['frecuenciaCardiaca'],
-      temperatura: json['temperatura'].toDouble(),
-      oxigenacion: json['oxigenacion'],
+      frecuenciaCardiaca: json['Frecuencia_cardiaca'],
+      temperatura: json['temperatura'].toDouble() ??
+          json['temperatura']?.toDouble() ??
+          0.0,
+      oxigenacion: json['oxigenacion'] ?? json['oxigenacion'] ?? 0,
       fecha: DateTime.parse(json['fecha']),
     );
   }
