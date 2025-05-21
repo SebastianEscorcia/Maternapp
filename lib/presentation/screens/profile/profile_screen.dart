@@ -51,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(width: 10),
                         const Expanded(
                           child: Text(
-                            'Regístrate o inicia sesión para guardar tus datos en la nube.',
+                            'Registrarse con google para guardar tus datos',
                             style: TextStyle(color: Colors.black87),
                           ),
                         ),

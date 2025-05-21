@@ -33,7 +33,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding
       .ensureInitialized(); // Asegúrate de inicializar el binding
-  await dotenv.load(fileName: 'config/.env');
+  await dotenv.load(fileName: 'assets/config/.env');
   await initializeDateFormatting('es_ES', null);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

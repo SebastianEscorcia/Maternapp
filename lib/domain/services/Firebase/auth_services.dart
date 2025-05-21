@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show debugPrint, kIsWeb;
 
 class AuthServices {
   FirebaseAuth get _auth => FirebaseAuth.instance;
@@ -13,8 +13,7 @@ class AuthServices {
   Future<User?> signInWithGoogle(String mensaje) async {
     try {
       final googleSignIn = GoogleSignIn(
-        // Solo se necesita clientId en móviles si se configuró en consola
-        clientId: !kIsWeb ? dotenv.env['GOOGLE_CLIENT_ID'] : null,
+        clientId: kIsWeb ? dotenv.env['GOOGLE_CLIENT_ID'] : null,
         scopes: ['email'],
       );
 
@@ -33,10 +32,10 @@ class AuthServices {
           await _auth.signInWithCredential(credential);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
-      mensaje = 'Error al iniciar sesión con Google: ${e.message}';
+      debugPrint('❌ FirebaseAuthException: ${e.message}');
       return null;
     } catch (e) {
-      mensaje = 'Error desconocido: $e';
+      debugPrint('❌ Error desconocido: $e');
       return null;
     }
   }

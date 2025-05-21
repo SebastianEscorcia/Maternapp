@@ -4,27 +4,18 @@ import '../../../core/utils/dialog_buttom_vitals/mostrar_dialog_selector.dart';
 import '../../layout/layout_scaffold.dart';
 import '../../providers/signal_vitals/signal_vital_provider.dart';
 import '../../widgets/vitals/vital_card.dart';
-import '../../providers/navigation_navbar_provider.dart';
-import '../../widgets/home/navbar/botton_navbar.dart';
 
 class VitalsScreen extends StatelessWidget {
   const VitalsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final navProvider = Provider.of<NavigationNavbarProvider>(context);
-    final isInsideMainFlow = ModalRoute.of(context)?.isFirst ?? false;
     final signos = Provider.of<SignosVitalesProvider>(context).signos;
 
     return LayoutScaffold(
       useMaternalBackground: true,
       centerContent: false,
-      bottomNav: isInsideMainFlow
-          ? null
-          : BottonNavbar(
-              currentIndex: navProvider.currentIndex,
-              onTap: (index) => navProvider.irAPestania(context, index),
-            ),
+      bottomNav: null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: SingleChildScrollView(
@@ -54,19 +45,10 @@ class VitalsScreen extends StatelessWidget {
                 icon: Icons.favorite_border,
                 title: "Frecuencia cardíaca",
                 value: signos != null
-                    ? "${signos.frecuenciaCardiaca} bpm"
+                    ? "${signos.frecuenciaCardiaca} "
                     : "-- bpm",
                 color: Colors.redAccent,
               ),
-
-              // 💓 Frecuencia cardíaca
-              VitalCard(
-                icon: Icons.favorite_border,
-                title: "Frecuencia cardíaca",
-                value: "72 bpm",
-                color: Colors.redAccent,
-              ),
-              const SizedBox(height: 16),
 
               // 🌡️ Temperatura
               VitalCard(

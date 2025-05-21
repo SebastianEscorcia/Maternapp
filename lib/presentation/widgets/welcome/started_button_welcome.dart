@@ -12,7 +12,7 @@ class StartedButtonWelcome extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.pink.withOpacity(0.4),
+            color: Colors.pink.withAlpha(4),
             spreadRadius: 1,
             blurRadius: 15,
             offset: Offset(0, 4),
@@ -39,7 +39,7 @@ class StartedButtonWelcome extends StatelessWidget {
           ),
           shadowColor: Colors.transparent,
         ),
-        onPressed: () => Navigator.pushReplacementNamed(context, Routes.questionScreen),
+        onPressed: () => Navigator.pushNamed(context, Routes.questionScreen),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

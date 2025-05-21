@@ -1,6 +1,6 @@
 class SignosVitales {
   final String maternaId;
-  final int frecuenciaCardiaca;
+  final String  frecuenciaCardiaca;
   final double temperatura;
   final int oxigenacion;
   final DateTime fecha;
@@ -22,6 +22,12 @@ class SignosVitales {
       fecha: DateTime.parse(json['fecha']),
     );
   }
+  SignosVitales.empty(String f)
+      : maternaId = '',
+        frecuenciaCardiaca = f,
+        temperatura = 0.0,
+        oxigenacion = 0,
+        fecha = DateTime.now();
 
   Map<String, dynamic> toJson() {
     return {

@@ -66,7 +66,7 @@ class QuestionScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  color: Colors.grey.withAlpha(2),
                                   spreadRadius: 2,
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),

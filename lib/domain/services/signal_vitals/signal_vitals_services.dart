@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
+
 
 import '../../../data/models/signal_vital/signal_vital_model.dart';
 import '../smartwatch/smartwatch_services.dart';
@@ -11,7 +11,11 @@ class SignosVitalesService {
   Future<SignosVitales> obtenerSignosDesdeSmartwatch() async {
     try {
       final result = await _smartwatch.obtenerSignosVitales();
-      return SignosVitales.fromJson(Map<String, dynamic>.from(result!));
+      var f =
+          result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
+      final signos = SignosVitales.empty(f);
+      return signos;
+      //return SignosVitales.fromJson(Map<String, dynamic>.from(result!));
     } catch (e) {
       log("Error al obtener signos vitales: $e");
       rethrow;

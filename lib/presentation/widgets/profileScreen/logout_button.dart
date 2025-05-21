@@ -12,6 +12,9 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+    if(user == null) return const SizedBox.shrink();
     return Center(
       child: ElevatedButton.icon(
         onPressed: () => _confirmLogout(context),
@@ -31,7 +34,8 @@ class LogoutButton extends StatelessWidget {
 
   Future<void> _confirmLogout(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final maternaProvider = Provider.of<MaternaProvider>(context, listen: false);
+    final maternaProvider =
+        Provider.of<MaternaProvider>(context, listen: false);
 
     final confirmed = await showDialog<bool>(
           context: context,

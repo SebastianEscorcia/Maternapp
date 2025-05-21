@@ -14,6 +14,12 @@ migrate_working_dir/
 firebase_options.dart
 .env
 
+# Ignorar la carpeta .cxx en Android
+android/app/.cxx/
+
+# Ignorar el archivo google-services.json
+android/app/google-services.json
+
 # IntelliJ related
 *.iml
 *.ipr
