@@ -46,7 +46,14 @@ class SmartwatchServices {
     // Espera la primera respuesta recibida
     final response = await onMessageReceived.first;
 
-    return {"Frecuencia_cardiaca": response};
+    final signos = response.split(";");
+    final fc = signos.isNotEmpty ? signos[0] : "No hay datos";
+    final ox = signos.length > 1 ? signos[1] : "No hay datos";
+
+    return {
+      "Frecuencia_cardiaca": fc,
+      "Oxigenacion": ox,
+    };
   }
 
   // Obtener nodos conectados

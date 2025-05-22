@@ -11,9 +11,10 @@ class SignosVitalesService {
   Future<SignosVitales> obtenerSignosDesdeSmartwatch() async {
     try {
       final result = await _smartwatch.obtenerSignosVitales();
-      var f =
+      var fc =
           result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
-      final signos = SignosVitales.empty(f);
+      var ox = result['Oxigenacion']?.toString() ?? 'No message received';
+      final signos = SignosVitales.empty(fc, ox);
       return signos;
       //return SignosVitales.fromJson(Map<String, dynamic>.from(result!));
     } catch (e) {

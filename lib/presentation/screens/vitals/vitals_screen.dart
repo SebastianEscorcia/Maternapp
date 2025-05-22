@@ -50,20 +50,20 @@ class VitalsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               //TARJETA DE SIGNO VITAL DESDE SMARTWATCH
-              VitalCard(
+              /*VitalCard(
                 icon: Icons.favorite_border,
                 title: "Frecuencia cardíaca",
                 value: signos != null
                     ? "${signos.frecuenciaCardiaca} bpm"
                     : "-- bpm",
                 color: Colors.redAccent,
-              ),
+              ),*/
 
               // 💓 Frecuencia cardíaca
               VitalCard(
                 icon: Icons.favorite_border,
                 title: "Frecuencia cardíaca",
-                value: "72 bpm",
+                value: signos != null ? signos.frecuenciaCardiaca : "-- bpm",
                 color: Colors.redAccent,
               ),
               const SizedBox(height: 16),
@@ -81,7 +81,7 @@ class VitalsScreen extends StatelessWidget {
               VitalCard(
                 icon: Icons.bubble_chart_outlined,
                 title: "Oxigenación",
-                value: "98 %",
+                value: signos != null ? signos.oxigenacion : "-- %",
                 color: Colors.blue,
               ),
 

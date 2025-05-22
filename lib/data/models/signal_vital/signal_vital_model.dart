@@ -2,7 +2,7 @@ class SignosVitales {
   final String maternaId;
   final String frecuenciaCardiaca;
   final double temperatura;
-  final int oxigenacion;
+  final String oxigenacion;
   final DateTime fecha;
 
   SignosVitales({
@@ -12,11 +12,12 @@ class SignosVitales {
     required this.oxigenacion,
     required this.fecha,
   });
-  SignosVitales.empty(String f)
+
+  SignosVitales.empty(String f, String o)
       : maternaId = '',
         frecuenciaCardiaca = f,
         temperatura = 0.0,
-        oxigenacion = 0,
+        oxigenacion = o,
         fecha = DateTime.now();
 
   factory SignosVitales.fromJson(Map<String, dynamic> json) {
