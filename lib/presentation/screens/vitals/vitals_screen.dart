@@ -13,8 +13,8 @@ class VitalsScreen extends StatelessWidget {
     final signos = Provider.of<SignosVitalesProvider>(context).signos;
 
     return LayoutScaffold(
+      title: "SIGNOS VITALES",
       useMaternalBackground: true,
-      centerContent: false,
       bottomNav: null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -49,7 +49,7 @@ class VitalsScreen extends StatelessWidget {
                     : "-- bpm",
                 color: Colors.redAccent,
               ),
-
+              const SizedBox(height: 16),
               // 🌡️ Temperatura
               VitalCard(
                 icon: Icons.thermostat_outlined,

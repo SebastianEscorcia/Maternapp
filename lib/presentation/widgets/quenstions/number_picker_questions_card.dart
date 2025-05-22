@@ -38,7 +38,7 @@ class NumberPickerQuestionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withAlpha(1),
             blurRadius: 10,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -109,7 +109,7 @@ class NumberPickerQuestionCard extends StatelessWidget {
                 Container(
                   height: 46,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF4B8A).withOpacity(0.1),
+                    color: const Color(0xFFFF4B8A).withAlpha(1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: const Color(0xFFFF4B8A),
@@ -151,7 +151,7 @@ class NumberPickerQuestionCard extends StatelessWidget {
                   right: 0,
                   child: Icon(
                     Icons.keyboard_arrow_right,
-                    color: const Color(0xFFFF4B8A).withOpacity(0.7),
+                    color: const Color(0xFFFF4B8A).withAlpha(2),
                     size: 32,
                   ),
                 ),
@@ -159,7 +159,7 @@ class NumberPickerQuestionCard extends StatelessWidget {
                   left: 0,
                   child: Icon(
                     Icons.keyboard_arrow_left,
-                    color: const Color(0xFFFF4B8A).withOpacity(0.7),
+                    color: const Color(0xFFFF4B8A).withAlpha(2),
                     size: 32,
                   ),
                 ),

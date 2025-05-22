@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:maternapp/data/models/drafts/maternal_draft.dart';
 
 class MaternaDraftProvider with ChangeNotifier {
-  final MaternaDraft _draft = MaternaDraft();
+  MaternaDraft _draft = MaternaDraft();
   MaternaDraft get draft => _draft;
 
   void asegurarUidDesdeFirebase() {
@@ -11,6 +11,11 @@ class MaternaDraftProvider with ChangeNotifier {
     if (user != null && (_draft.uId == null || _draft.uId!.isEmpty)) {
       _draft.uId = user.uid;
     }
+  }
+
+  void clear() {
+    _draft = MaternaDraft(); // ← reinicia el draft a uno nuevo vacío
+    notifyListeners();
   }
 
   void updateNombre(String nombre) {
@@ -25,11 +30,13 @@ class MaternaDraftProvider with ChangeNotifier {
 
   void updatePeso(double peso) {
     _draft.peso = peso;
+    draft.pesoRespondido = true;
     notifyListeners();
   }
 
   void updateEstatura(double estatura) {
     _draft.estatura = estatura;
+     draft.estaturaRespondida = true;
     notifyListeners();
   }
 

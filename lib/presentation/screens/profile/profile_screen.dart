@@ -1,12 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../layout/layout_scaffold.dart';
 import '../../providers/Auth/auth_provider.dart';
 import '../../providers/maternal_provider.dart';
 import '../../providers/navigation_navbar_provider.dart';
+import '../../widgets/general/loading_dialog_widget.dart';
 import '../../widgets/historial_sintomas/historial_sintomas_button.dart';
 import '../../widgets/profileScreen/logout_button.dart';
 
@@ -57,71 +56,40 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () async {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const LoadingDialogWidget(
+                                mensaje: "Vinculando tu perfil con Google...",
+                              ),
+                            );
+
                             final user = await authProvider.signInWithGoogle();
+
                             if (user != null && context.mounted) {
                               final maternaProvider =
                                   Provider.of<MaternaProvider>(context,
                                       listen: false);
-                              final prefs =
-                                  await SharedPreferences.getInstance();
-                              final uid = user.uid;
+                              await authProvider.migrarMaternaSiExiste(
+                                  maternaProvider: maternaProvider);
 
-                              await maternaProvider.cargarMaternaFirebase(uid);
+                              Navigator.pop(context); // Cierra el diálogo
 
-                              if (maternaProvider.materna != null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text("✅ Sesión iniciada correctamente"),
-                                  ),
-                                );
-                              } else {
-                                final uidTemporal =
-                                    prefs.getString('maternaTemporalUid');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "✅ Perfil vinculado correctamente con tu cuenta de Google."),
+                                ),
+                              );
+                            } else {
+                              Navigator.pop(context); // Cierra el diálogo
 
-                                if (uidTemporal != null &&
-                                    uidTemporal.isNotEmpty) {
-                                  await maternaProvider
-                                      .cargarMaternaFirebase(uidTemporal);
-
-                                  if (maternaProvider.materna != null) {
-                                    final nuevaMaterna = maternaProvider
-                                        .materna!
-                                        .copyWith(uid: uid);
-
-                                    await FirebaseFirestore.instance
-                                        .collection('maternas')
-                                        .doc(uid)
-                                        .set(nuevaMaterna.toJson());
-
-                                    await FirebaseFirestore.instance
-                                        .collection('maternas')
-                                        .doc(uidTemporal)
-                                        .delete();
-                                    await prefs.remove('maternaTemporalUid');
-
-                                    maternaProvider.setMaterna(nuevaMaterna);
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              "🔄 Perfil vinculado con éxito.")),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              "❗ No se encontró perfil previo para migrar.")),
-                                    );
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            "❗ No se encontró perfil previo para migrar.")),
-                                  );
-                                }
-                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "❗ Error al iniciar sesión con Google."),
+                                ),
+                              );
                             }
                           },
                           child: const Text("Iniciar sesión"),

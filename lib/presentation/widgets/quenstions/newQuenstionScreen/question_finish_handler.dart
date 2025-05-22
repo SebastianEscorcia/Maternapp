@@ -48,6 +48,32 @@ Future<void> onFinalizar(BuildContext context) async {
   );
 
   try {
+    final mensajeError = questionService.validarFormulario(
+        draftProvider.draft, calendarProvider.model);
+    if (mensajeError != null) {
+      Navigator.pop(context); // Cierra el modal de carga
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          children:  [
+            Icon(Icons.warning_amber_rounded, color: Colors.white),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                ' $mensajeError',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red[400],
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ));
+      return; 
+    }
     await questionService.guardarMaternaYCalendario(
       draft: draftProvider.draft,
       calendar: calendarProvider.model,
@@ -128,21 +154,25 @@ Future<void> onFinalizar(BuildContext context) async {
   } catch (e) {
     Navigator.pop(context);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: 10),
-            Text('Error: $e'),
-          ],
-        ),
-        backgroundColor: Colors.red[400],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(
+        children: const [
+          Icon(Icons.error_outline, color: Colors.white),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Ocurrió un error al guardar tus datos. Intenta nuevamente.',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
       ),
-    );
+      backgroundColor: Colors.red[400],
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ));
   }
 }

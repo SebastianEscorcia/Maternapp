@@ -16,4 +16,8 @@ class NextOrPreviousQuestionsProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  void reset() {
+    _index = 0;
+    notifyListeners();
+  }
 }

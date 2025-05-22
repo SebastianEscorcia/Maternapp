@@ -23,8 +23,8 @@ class StartedButtonWelcome extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFEC407A), // Rosa más claro
-            Color(0xFFD81B60), // Rosa más oscuro
+            Color(0xFFEC407A), 
+            Color(0xFFD81B60), 
           ],
         ),
       ),

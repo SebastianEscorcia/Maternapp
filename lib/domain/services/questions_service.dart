@@ -24,7 +24,7 @@ class QuestionService {
     required this.maternalService,
   });
 
-  String? validarFormulario() {
+  String? validarFormulario(MaternaDraft draft, CalendarModel calendar) {
     final draft = draftProvider.draft;
     final calendar = calendarProvider.model;
 
@@ -37,12 +37,12 @@ class QuestionService {
     if (edadCalculada <= 0) return "La edad no es válida.";
     if (edadCalculada <= 10) return "Estás muy pequeña para quedar embarazada.";
 
-    if (draft.peso == null || draft.peso! < 30 || draft.peso! > 150)
-      return "El peso debe estar entre 30 y 150 kg.";
-    if (draft.estatura == null ||
+    if (!draft.pesoRespondido || draft.peso == null || draft.peso! < 30 || draft.peso! > 150)
+      return "El peso debe estar entre 30 y 150 kg o no has seleccionado nada ";
+    if (!draft.estaturaRespondida || draft.estatura == null ||
         draft.estatura! < 1.20 ||
         draft.estatura! > 2.00)
-      return "La estatura debe estar entre 1.20 m y 2.00 m.";
+      return "La estatura debe estar entre 1.20 m y 2.00 m o no has seleccionado nada";
 
     if (calendar.selectedDay == null)
       return "Selecciona la fecha de tu última menstruación.";

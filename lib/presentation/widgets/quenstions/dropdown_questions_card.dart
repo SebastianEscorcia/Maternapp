@@ -29,7 +29,7 @@ class DropdownQuestionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withAlpha(1),
             blurRadius: 10,
             spreadRadius: 0,
             offset: const Offset(0, 2),
@@ -90,7 +90,7 @@ class DropdownQuestionCard extends StatelessWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF4B8A).withOpacity(0.1),
+                  color: const Color(0xFFFF4B8A).withAlpha(1),
                   blurRadius: 8,
                   spreadRadius: 0,
                   offset: const Offset(0, 2),
@@ -190,7 +190,7 @@ class DropdownQuestionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFFF4B8A).withOpacity(0.1) : Colors.transparent,
+        color: isSelected ? const Color(0xFFFF4B8A).withAlpha(1) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         border: isSelected
             ? Border.all(color: const Color(0xFFFF4B8A), width: 2)

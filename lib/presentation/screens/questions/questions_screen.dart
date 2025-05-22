@@ -28,7 +28,7 @@ class QuestionScreen extends StatelessWidget {
     final isLast = nextOrPreviusQuestionsProvider.index == questions.length - 1;
 
     return LayoutScaffold(
-      showBack: false,
+      showBack: true,
       useMaternalBackground: true,
       centerContent: true,
       title: "Tu Perfil Materno",

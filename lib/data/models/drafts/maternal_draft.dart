@@ -12,6 +12,15 @@ class MaternaDraft {
   DateTime? fum;
   String? uId;
   String? calendarId;
+
+  bool pesoRespondido = false;
+  bool estaturaRespondida = false;
+  bool anioNacimientoRespondido = false;
+  bool tipoEmbarazoRespondido = false;
+  bool embarazoActualRespondido = false;
+  bool primerEmbarazoRespondido = false;
+  bool antecedentesRespondido = false;
+  
   MaternaDraft({
     this.nombre,
     this.anioNacimiento,

@@ -5,7 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Routes/routes.dart';
 import '../../providers/Auth/auth_provider.dart';
+import '../../providers/calendar_provider.dart';
+import '../../providers/maternal_draft_provider.dart';
 import '../../providers/maternal_provider.dart';
+import '../../providers/next_or_previous_questions_provider.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});
@@ -14,7 +17,7 @@ class LogoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
-    if(user == null) return const SizedBox.shrink();
+    if (user == null) return const SizedBox.shrink();
     return Center(
       child: ElevatedButton.icon(
         onPressed: () => _confirmLogout(context),
@@ -34,6 +37,13 @@ class LogoutButton extends StatelessWidget {
 
   Future<void> _confirmLogout(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final draftProvider =
+        Provider.of<MaternaDraftProvider>(context, listen: false);
+    final nextQuestionProvider =
+        Provider.of<NextOrPreviousQuestionsProvider>(context, listen: false);
+    final calendarProvider =
+        Provider.of<CalendarProvider>(context, listen: false);
+
     final maternaProvider =
         Provider.of<MaternaProvider>(context, listen: false);
 
@@ -93,11 +103,18 @@ class LogoutButton extends StatelessWidget {
     await Future.delayed(const Duration(seconds: 1));
 
     await authProvider.signOut();
+    draftProvider.clear();
     maternaProvider.clear();
+    nextQuestionProvider.reset();
+    calendarProvider.reiniciarModelo();
 
     final prefs = await SharedPreferences.getInstance();
+    final uidTemporal = prefs.getString('maternaTemporalUid');
     await prefs.clear();
 
+    if (uidTemporal != null) {
+      await prefs.setString('maternaTemporalUid', uidTemporal);
+    }
     if (context.mounted) {
       Navigator.pop(context); // Cierra el dialog
       Navigator.pushNamedAndRemoveUntil(

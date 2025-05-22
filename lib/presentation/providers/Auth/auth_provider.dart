@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/services/Firebase/auth_services.dart';
 
+import '../../../domain/services/migracion/migracion_service.dart';
+import '../../../domain/services/shared_preferences/shared_prefs_service.dart';
 import '../maternal_provider.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthServices _authServices;
+
   User? _user;
   String _errorMessage = '';
   bool _isLoading = true;
@@ -102,9 +105,23 @@ class AuthProvider with ChangeNotifier {
         .doc(uidGoogle)
         .set(maternaMigrada.toJson());
 
+    // ✅ Migramos los documentos relacionados
+    final migracionService = MigracionService();
+    final exito = await migracionService.migrarDocumentosRelacionados(
+        uidTemporal, uidGoogle);
+    if (!exito) {
+      print("⚠️ La migración no fue completamente exitosa.");
+     
+    }
+
     // ✅ Actualizamos el provider con la nueva materna
     maternaProvider.setMaterna(maternaMigrada);
     print("✅ Materna migrada del UID temporal al de Google.");
+
+    // ✅ Actualizamos SharedPreferences
+    final prefsService = SharedPrefsService();
+    await prefsService.guardarMaternaUid(uidGoogle);
+    await prefsService.eliminarMaternaTemporalUid();
 
     // ✅ Eliminamos el documento viejo si el UID anterior era distinto
     if (uidTemporal.isNotEmpty && uidTemporal != uidGoogle) {
