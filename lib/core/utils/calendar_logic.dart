@@ -64,10 +64,6 @@ Future<void> manejarSeleccionDeFecha({
       }
     }
 
-    maternaProvider.crearMaterna(
-      draft: draftProvider.draft,
-      calendar: calendarProvider.model,
-    );
     // Actualizamos la fecha de última menstruación (FUM) en Firebase y en el modelo de MaternaProvider
     await maternaProvider.actualizarFUMDesdeCalendario(context);
   }

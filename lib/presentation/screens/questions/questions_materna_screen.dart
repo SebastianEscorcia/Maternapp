@@ -16,15 +16,15 @@ import '../../widgets/quenstions/newQuenstionScreen/question_progress_bar.dart';
 import '../../widgets/quenstions/newQuenstionScreen/question_step_card_decorations.dart';
 import '../../widgets/quenstions/newQuenstionScreen/question_step_indicator.dart';
 
-class QuestionScreen extends StatelessWidget {
-  const QuestionScreen({super.key});
+class QuestionsMaternaScreen extends StatelessWidget {
+  const QuestionsMaternaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final draftProviderMaterna = Provider.of<MaternaDraftProvider>(context);
     final nextOrPreviusQuestionsProvider =
         Provider.of<NextOrPreviousQuestionsProvider>(context);
-    final questions = buildQuestions(draftProviderMaterna);
+    final questions = buildQuestions(draftProviderMaterna, context);
     final isLast = nextOrPreviusQuestionsProvider.index == questions.length - 1;
 
     return LayoutScaffold(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../Routes/routes.dart';
 import '../../layout/layout_scaffold.dart';
 import '../../providers/Auth/auth_provider.dart';
 import '../../providers/maternal_provider.dart';
@@ -132,10 +133,10 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: flujo de vinculación
+                  Navigator.pushNamed(context, Routes.vincularFamiliarScreen);
                 },
                 icon: const Icon(Icons.group_add),
-                label: const Text("Vincular cuenta de pareja"),
+                label: const Text("Vincular cuenta de pareja o familiar"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pink[300],
                   foregroundColor: Colors.white,

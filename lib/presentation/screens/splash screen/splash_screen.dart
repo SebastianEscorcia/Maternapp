@@ -13,10 +13,15 @@ class SplashScreen extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     final maternaId = prefs.getString('maternaUid');
     final calendarioId = prefs.getString('calendarioUid');
-    
+    final familiarId = prefs.getString('familiarUid');
+
     // Simular un retraso para mostrar la pantalla de carga
     await Future.delayed(const Duration(seconds: 2));
 
+    // ✅ Prioriza al familiar si está logueado
+    if (familiarId != null && familiarId.isNotEmpty) {
+      return Routes.mainScaffoldNavbarFamiliar;
+    }
     final maternaProvider =
         Provider.of<MaternaProvider>(context, listen: false);
     final calendarProvider =
@@ -35,7 +40,7 @@ class SplashScreen extends StatelessWidget {
       }
     }
 
-    return Routes.welcomeScreen;
+    return Routes.inicio;
   }
 
   @override

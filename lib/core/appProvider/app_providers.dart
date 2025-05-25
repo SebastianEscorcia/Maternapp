@@ -3,11 +3,16 @@ import 'package:provider/single_child_widget.dart';
 
 import '../../domain/services/Firebase/auth_services.dart';
 import '../../domain/services/calendar_services.dart';
+import '../../domain/services/codigo_vinculacion/codigo_vinculacion_services.dart';
+import '../../domain/services/familiar/familiar_services.dart';
+import '../../domain/services/familiar/questions/questions_service_familiar.dart';
 import '../../domain/services/maternal_services.dart';
-import '../../domain/services/questions_service.dart';
+import '../../domain/services/questions_service_materna.dart';
 import '../../presentation/providers/Auth/auth_provider.dart';
 import '../../presentation/providers/QuenstionsMessage/motivational_message_provider.dart';
 import '../../presentation/providers/calendar_provider.dart';
+import '../../presentation/providers/codigoVinculacion/codigo_vinculacion_provider.dart';
+import '../../presentation/providers/familiar/familiar_provider.dart';
 import '../../presentation/providers/materna_edit_provider.dart';
 import '../../presentation/providers/maternal_draft_provider.dart';
 import '../../presentation/providers/maternal_provider.dart';
@@ -21,6 +26,18 @@ class AppProviders {
         // Servicios base
         Provider<CalendarService>(create: (_) => CalendarService()),
         Provider<MaternalService>(create: (_) => MaternalService()),
+        Provider(create: (_) => FamiliarService()),
+
+        //Servicio CódigoVinculacion y Provider
+        Provider(create: (_) => CodigoVinculacionService()),
+
+        ChangeNotifierProxyProvider<CodigoVinculacionService,
+            CodigoVinculacionProvider>(
+          create: (context) => CodigoVinculacionProvider(
+              context.read<CodigoVinculacionService>()),
+          update: (_, codigoService, __) =>
+              CodigoVinculacionProvider(codigoService),
+        ),
 
         // Providers puros
         ChangeNotifierProvider(create: (_) => MaternaDraftProvider()),
@@ -39,6 +56,20 @@ class AppProviders {
         //Provider de Signos Vitales
         ChangeNotifierProvider(create: (_) => SignosVitalesProvider()),
 
+        //Provider questions familiar´
+        ChangeNotifierProxyProvider2<FamiliarService, CodigoVinculacionService,
+            FamiliarProvider>(
+          create: (_) => FamiliarProvider(),
+          update: (_, familiarService, codigoService, provider) {
+            provider ??= FamiliarProvider();
+            provider.setService(familiarService);
+            provider.setCodigoService(codigoService);
+            return provider;
+          },
+        ),
+        Provider<FamiliarQuestionService>(
+            create: (_) => FamiliarQuestionService()),
+
         ChangeNotifierProxyProvider2<MaternalService, CalendarService,
             MaternaProvider>(
           create: (_) => MaternaProvider(
@@ -50,7 +81,7 @@ class AppProviders {
               calendarService: calendarService),
         ),
 
-        // ✅ Después puedes inyectar QuestionService que depende de los anteriores
+        //  Después puedes inyectar QuestionService que depende de los anteriores
         ProxyProvider5<MaternaDraftProvider, CalendarProvider, MaternaProvider,
             CalendarService, MaternalService, QuestionService>(
           update: (_, draftProvider, calendarProvider, maternaProvider,

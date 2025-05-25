@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../providers/familiar/familiar_provider.dart';
 import '../../../providers/maternal_draft_provider.dart';
 
 //CALENDARIO
@@ -11,7 +12,11 @@ import '../number_picker_questions_card.dart';
 import '../year_picker_question_card.dart';
 import '../yes_no_questions_card.dart';
 
-List<Widget> buildQuestions(MaternaDraftProvider draftProviderMaterna) => [
+List<Widget> buildQuestions(
+  MaternaDraftProvider draftProviderMaterna,
+  BuildContext context,
+) =>
+    [
       InputQuestionCard(
         questionText: "¿Cuál es tu nombre?",
         hintText: "Escribe tu nombre",
@@ -98,3 +103,39 @@ List<Widget> buildQuestions(MaternaDraftProvider draftProviderMaterna) => [
       ),
       const CustomTableCalendar(),
     ];
+List<Widget> buildFamiliarQuestions(FamiliarProvider familiarProvider) {
+  return [
+    InputQuestionCard(
+      questionText: "¿Cuál es tu nombre?",
+      hintText: "Escribe tu nombre",
+      inputType: TextInputType.name,
+      initialValue: familiarProvider.familiar?.nombre ?? '',
+      onChanged: (val) => familiarProvider.updateNombre(val),
+      icon: Icons.person,
+      imageAsset: 'assets/images/nameicon.png',
+      motivationalText: "¡Bienvenido! Tu apoyo será muy valioso.",
+    ),
+    NumberPickerQuestionCard(
+      questionText: "¿Cuál es tu edad?",
+      selectedValue: familiarProvider.familiar?.edad,
+      minValue: 10,
+      maxValue: 100,
+      unit: "años",
+      onChanged: (val) => familiarProvider.updateEdad(val),
+      icon: Icons.cake,
+      imageAsset: 'assets/images/birthdayicon.png',
+      motivationalText: "Tu edad nos ayudará a adaptar tu experiencia.",
+    ),
+    InputQuestionCard(
+      questionText: "Código de vinculación",
+      hintText: "Ej: ABC123",
+      inputType: TextInputType.text,
+      initialValue: familiarProvider.familiar?.codigoVinculacion ?? '',
+      onChanged: (val) => familiarProvider.updateCodigoVinculacion(val),
+      icon: Icons.key,
+      imageAsset: 'assets/images/locked_icon.png',
+      motivationalText:
+          "Este código lo genera tu pareja desde su perfil en MaternApp.",
+    ),
+  ];
+}

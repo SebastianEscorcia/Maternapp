@@ -39,7 +39,7 @@ class StartedButtonWelcome extends StatelessWidget {
           ),
           shadowColor: Colors.transparent,
         ),
-        onPressed: () => Navigator.pushNamed(context, Routes.questionScreen),
+        onPressed: () => Navigator.pushNamed(context, Routes.questionMaternaScreen),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

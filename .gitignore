@@ -18,7 +18,7 @@ firebase_options.dart
 android/app/.cxx/
 
 # Ignorar el archivo google-services.json
-android/app/google-services.json
+android/app/google-services.json/
 
 # IntelliJ related
 *.iml

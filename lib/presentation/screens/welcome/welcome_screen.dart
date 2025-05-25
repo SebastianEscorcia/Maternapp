@@ -18,7 +18,8 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutScaffold(
-      title: "",
+      title: "Inicia Tu Aventura",
+      showBack: true,
       centerContent: true,
       useMaternalBackground: true,
       child: SingleChildScrollView(
@@ -35,9 +36,10 @@ class WelcomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),
+                  //EFECTO TARJETA MODIFICAR el withAlpha
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.pink.withOpacity(0.15),
+                      color: Colors.pink.withAlpha(1),
                       blurRadius: 20,
                       spreadRadius: 5,
                       offset: const Offset(0, 10),
@@ -158,16 +160,16 @@ class WelcomeScreen extends StatelessWidget {
                                   ),
                                   backgroundColor: Colors.pinkAccent,
                                   behavior: SnackBarBehavior.floating,
-                                  duration: const Duration(seconds: 4),
+                                  duration: const Duration(seconds: 3),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(16))),
                                 ),
                               );
 
-                              await Future.delayed(const Duration(seconds: 2));
+                              await Future.delayed(const Duration(seconds: 3));
                               Navigator.pushReplacementNamed(
-                                  context, Routes.questionScreen);
+                                  context, Routes.questionMaternaScreen);
                             }
                           }
                         } else if (!authProvider.userCancelledLogin &&

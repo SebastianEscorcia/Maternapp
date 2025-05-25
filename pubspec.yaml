@@ -48,6 +48,8 @@ dependencies:
   flutter_dotenv: ^5.2.1
   shared_preferences: ^2.5.3
   fl_chart: ^1.0.0
+  qr_flutter: ^4.1.0
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,9 @@ flutter:
   assets:
     - assets/images/maternapp.png
     - assets/animations/loading_heart.json
+    - assets/animations/family1.json
+    - assets/animations/family2.json
+    - assets/animations/baby.json
     - assets/videos/welcome.mp4
     - assets/animations/women_pregnant.json
     - assets/animations/success.json
@@ -83,6 +88,7 @@ flutter:
     - assets/images/first_pregnancy_icon.png
     - assets/images/multiple_pregnancy_icon.png
     - assets/images/medical_icon.png
+    - assets/images/locked_icon.png
     - assets/config/.env
 
 

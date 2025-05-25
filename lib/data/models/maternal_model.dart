@@ -12,7 +12,8 @@ class Materna {
   final bool? tieneAntecedentes;
   final String calendarioId;
   final String uid;
-  final List<String> sintomasIds;
+
+  final String? codigoVinculacion;
 
   Materna({
     required this.uid,
@@ -28,7 +29,7 @@ class Materna {
     this.tipoEmbarazo,
     this.tieneAntecedentes,
     this.calendarioId = '',
-    this.sintomasIds = const [],
+    this.codigoVinculacion
   });
 
   Map<String, dynamic> toJson() => {
@@ -44,7 +45,7 @@ class Materna {
         'tipoEmbarazo': tipoEmbarazo,
         'tieneAntecedentes': tieneAntecedentes,
         'calendarioId': calendarioId,
-        'sintomasIds': sintomasIds,
+        'codigoVinculacion': codigoVinculacion,
       };
   factory Materna.fromJson(String uid, Map<String, dynamic> json) {
     return Materna(
@@ -61,7 +62,7 @@ class Materna {
       tipoEmbarazo: json['tipoEmbarazo'],
       tieneAntecedentes: json['tieneAntecedentes'],
       calendarioId: json['calendarioId'],
-      sintomasIds: List<String>.from(json['sintomasIds'] ?? []),
+      codigoVinculacion: json['codigoVinculacion']
     );
   }
   Materna copyWith({
@@ -77,8 +78,8 @@ class Materna {
     String? tipoEmbarazo,
     bool? tieneAntecedentes,
     String? calendarioId,
-    List<String> sintomasIds = const [],
     String? uid,
+    String? codigoVinculacion
   }) {
     return Materna(
       nombre: nombre ?? this.nombre,
@@ -93,7 +94,7 @@ class Materna {
       tipoEmbarazo: tipoEmbarazo ?? this.tipoEmbarazo,
       tieneAntecedentes: tieneAntecedentes ?? this.tieneAntecedentes,
       calendarioId: calendarioId ?? this.calendarioId,
-      sintomasIds: sintomasIds,
+      codigoVinculacion: codigoVinculacion ?? this.codigoVinculacion,
       uid: uid ?? this.uid,
     );
   }

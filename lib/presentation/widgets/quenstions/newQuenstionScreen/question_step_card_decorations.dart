@@ -15,7 +15,7 @@ class QuestionStepCardDecorations extends StatelessWidget {
             width: 100,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFFFD6E5).withOpacity(0.4),
+              color: const Color(0xFFFFD6E5).withAlpha(4),
             ),
           ),
         ),
@@ -27,7 +27,7 @@ class QuestionStepCardDecorations extends StatelessWidget {
             width: 150,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFFFD6E5).withOpacity(0.3),
+              color: const Color(0xFFFFD6E5).withAlpha(3),
             ),
           ),
         ),

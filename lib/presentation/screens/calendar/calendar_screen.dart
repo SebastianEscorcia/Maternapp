@@ -39,7 +39,6 @@ class CalendarScreen extends StatelessWidget {
         return const LayoutScaffold(
           title: 'Calculadora de embarazo 📅',
           useMaternalBackground: true,
-          showBack: true,
           child: CustomTableCalendar(),
         );
         

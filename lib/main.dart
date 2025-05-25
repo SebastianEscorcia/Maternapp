@@ -14,14 +14,20 @@ import 'package:maternapp/Routes/routes.dart';
 
 // Screens
 import 'presentation/layout/main_scaffold_navbar.dart';
+import 'presentation/layout/main_scaffold_navbar_familiar.dart';
 import 'presentation/providers/materna_edit_provider.dart';
 import 'presentation/providers/maternal_provider.dart';
 import 'presentation/providers/sintomas/sintoma_provider.dart';
 import 'presentation/screens/SmartWatchs/select_wear_device_screen.dart';
+import 'presentation/screens/VincularFamiliar/vincular_familiar_screen.dart';
 import 'presentation/screens/edit materna/edit_materna_screen.dart';
+import 'presentation/screens/eleccion_inicial/initial_choice_screen.dart';
+import 'presentation/screens/familiar/home_familiar_screen.dart';
+import 'presentation/screens/familiar/welcome_familiar_screen.dart';
 import 'presentation/screens/historial_sintomas/historial_sintomas_screen.dart';
 import 'presentation/screens/profile/profile_screen.dart';
-import 'presentation/screens/questions/questions_screen.dart';
+import 'presentation/screens/questions/questions_familiar_screen.dart';
+import 'presentation/screens/questions/questions_materna_screen.dart';
 import 'presentation/screens/splash screen/splash_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
 import 'presentation/screens/vitals/vitals_screen.dart';
@@ -63,8 +69,12 @@ class MyApp extends StatelessWidget {
       routes: {
         Routes.splashScreen: (context) => const SplashScreen(),
         Routes.mainScaffoldNavbar: (context) => const MainScaffoldNavbar(),
+        Routes.mainScaffoldNavbarFamiliar: (context) => const MainScaffoldNavbarFamiliar(),
         Routes.calendarScreen: (context) => const CalendarScreen(),
-        Routes.questionScreen: (conntext) => const QuestionScreen(),
+        Routes.questionMaternaScreen: (conntext) => const QuestionsMaternaScreen(),
+        Routes.questionFamiliarScreen: (context) => const QuestionFamiliarScreen(),
+        Routes.vincularFamiliarScreen: (context) => const VincularFamiliarScreen(),
+        Routes.homeFamiliar: (context) => const HomeFamiliarScreen(),
         Routes.welcomeScreen: (context) => const WelcomeScreen(),
         Routes.vitalsScreen: (context) => const VitalsScreen(),
         Routes.tipsScreen: (context) => const TipsScreen(),
@@ -87,6 +97,8 @@ class MyApp extends StatelessWidget {
           if (materna != null) provider.cargarHistorialDelMes(materna.uid);
           return const HistorialSintomasScreen();
         },
+        Routes.welcomeFamiliarScreen: (context) => const WelcomeFamiliarScreen(),
+        Routes.inicio:(context) => InitialChoiceScreen(),
       },
     );
   }
