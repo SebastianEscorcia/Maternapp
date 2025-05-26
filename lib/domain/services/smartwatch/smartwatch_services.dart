@@ -32,7 +32,8 @@ class SmartwatchServices {
     } catch (e, s) {
       debugPrint('Error enviando mensaje al reloj: $e');
       debugPrint('$s');
-      throw Exception("Conecte el Smartwatch a su teléfono e intente nuevamente");
+      throw Exception(
+          "Conecte el Smartwatch a su teléfono e intente nuevamente");
     }
   }
 
@@ -48,7 +49,15 @@ class SmartwatchServices {
       // Espera la primera respuesta recibida
       final response = await onMessageReceived.first;
 
-      return {"Frecuencia_cardiaca": response, "oxigenacion": response};
+      final signos = response.split(";");
+      final fc = signos.isNotEmpty ? signos[0] : "No hay datos";
+      final ox = signos.length > 1 ? signos[1] : "No hay datos";
+
+      //Se manda el map de los resultados
+      return {
+        "Frecuencia_cardiaca": fc,
+        "Oxigenacion": ox,
+      };
     } catch (e) {
       debugPrint('Error en comunicación con el reloj: $e');
       return {

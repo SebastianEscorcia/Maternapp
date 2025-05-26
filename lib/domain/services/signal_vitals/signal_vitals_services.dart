@@ -17,10 +17,12 @@ class SignosVitalesService {
       throw Exception(result["error"]);
     }
 
+    //procesamos el map
     final fc =
         result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
     final ox = result['Oxigenacion']?.toString() ?? 'No message received';
 
+    //y usamos el constructor que recibe los valores
     return SignosVitales.empty(fc, ox);
   }
 
@@ -54,6 +56,7 @@ class SignosVitalesService {
       }
     }
 
+    print("Guardando signos vitales: $signos");
     await docRef.set(signos.toJson());
   }
 

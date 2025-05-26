@@ -13,13 +13,15 @@ void mostrarSelectorSmartwatch(BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text("Selecciona tu smartwatch"),
-        content: const Text("Elige el tipo de reloj con el que deseas conectarte."),
+        content:
+            const Text("Elige el tipo de reloj con el que deseas conectarte."),
         actions: [
           TextButton.icon(
             onPressed: () async {
               Navigator.of(dialogContext).pop();
 
-              final scaffoldContext = Scaffold.maybeOf(context)?.context ?? context;
+              final scaffoldContext =
+                  Scaffold.maybeOf(context)?.context ?? context;
 
               await _mostrarDialogoConectando(context);
 
@@ -36,7 +38,7 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                   final resultados = [
                     {
                       'label': 'Frecuencia Cardíaca',
-                      'valor': '${signos.frecuenciaCardiaca} bpm',
+                      'valor': signos.frecuenciaCardiaca,
                       'estado': evaluador.evaluarFrecuenciaCardiaca(
                         double.tryParse(signos.frecuenciaCardiaca) ?? 0,
                       ),
@@ -44,7 +46,7 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                     },
                     {
                       'label': 'Oxigenación',
-                      'valor': '${signos.oxigenacion} %',
+                      'valor': signos.oxigenacion,
                       'estado': evaluador.evaluarOxigenacion(
                         double.tryParse(signos.oxigenacion) ?? 0,
                       ),
@@ -53,21 +55,24 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                     {
                       'label': 'Temperatura',
                       'valor': '${signos.temperatura.toStringAsFixed(1)} °C',
-                      'estado': evaluador.evaluarTemperatura(signos.temperatura),
+                      'estado':
+                          evaluador.evaluarTemperatura(signos.temperatura),
                       'icon': Icons.thermostat,
                     },
                   ];
 
                   Color colorEstado(String estado) {
                     if (estado.contains("normal")) return Colors.green;
-                    if (estado.contains("alta") || estado.contains("baja")) return Colors.amber;
+                    if (estado.contains("alta") || estado.contains("baja"))
+                      return Colors.amber;
                     return Colors.redAccent;
                   }
 
                   await showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                       title: const Text("🩺 Evaluación de signos vitales"),
                       content: SingleChildScrollView(
                         child: Column(
@@ -80,12 +85,16 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                               color: color.withAlpha(1),
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               child: ListTile(
-                                leading: Icon(res['icon'] as IconData, color: color),
+                                leading:
+                                    Icon(res['icon'] as IconData, color: color),
                                 title: Text(
                                   res['label'] as String,
-                                  style: TextStyle(fontWeight: FontWeight.bold, color: color),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: color),
                                 ),
-                                subtitle: Text(estado, style: TextStyle(color: color)),
+                                subtitle: Text(estado,
+                                    style: TextStyle(color: color)),
                                 trailing: Text(
                                   res['valor'] as String,
                                   style: TextStyle(
@@ -110,13 +119,15 @@ void mostrarSelectorSmartwatch(BuildContext context) {
 
                   ScaffoldMessenger.of(scaffoldContext).showSnackBar(
                     const SnackBar(
-                      content: Text("Dispositivo Wear OS conectado correctamente"),
+                      content:
+                          Text("Dispositivo Wear OS conectado correctamente"),
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: Colors.green,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                       ),
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       duration: Duration(seconds: 2),
                     ),
                   );
@@ -134,7 +145,8 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
                     duration: const Duration(seconds: 3),
                   ),
                 );
@@ -187,7 +199,8 @@ Future<void> _mostrarDialogoConectando(BuildContext context) async {
               width: 120,
             ),
             const SizedBox(height: 10),
-            const Text("Conectando dispositivo...", style: TextStyle(fontSize: 16)),
+            const Text("Conectando dispositivo...",
+                style: TextStyle(fontSize: 16)),
           ],
         ),
       ),

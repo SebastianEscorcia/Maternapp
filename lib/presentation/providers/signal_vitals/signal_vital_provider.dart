@@ -37,33 +37,36 @@ class SignosVitalesProvider with ChangeNotifier {
     try {
       final nuevosSignos = await _servicio.obtenerSignosDesdeSmartwatch();
 
-      final fc = nuevosSignos.frecuenciaCardiaca;
-      final ox = nuevosSignos.oxigenacion;
+      _signos = nuevosSignos;
+      //final fc = nuevosSignos.frecuenciaCardiaca;
+      //final ox = nuevosSignos.oxigenacion;
 
-      // Validar si los datos son correctos
-      if (fc == "No message received" || ox == "No message received") {
+      // Validar si los datos son correctos ******* esta validacion estaba mal hecha, se puede mantener pero debe refactorizarse**********
+      /*if (fc == "No message received" || ox == "No message received") {
         throw Exception(
             "Smartwatch no está conectado o no envió datos válidos");
-      }
+      }*/
 
-      _signos = SignosVitales(
+      //****** aqui no es necesario crear un nuevo objeto porque el metodo obtenerSignosDesdeSmartwatch() devuelve el objeto creado */
+      /*_signos = SignosVitales(
         maternaId: maternaId,
         frecuenciaCardiaca: fc,
         temperatura: nuevosSignos.temperatura,
         oxigenacion: ox,
         fecha: DateTime.now(),
-      );
+      );*/
 
       await _servicio.guardarSignosVitales(
-        _signos!,
+        nuevosSignos!,
         onOverwrite: agregarAlHistorialLocal,
       );
 
       final evaluador = EvaluadorSignosVitales(esMaterna: esMaterna);
 
-      final mensajeFC =
-          evaluador.evaluarFrecuenciaCardiaca(double.tryParse(fc) ?? 0);
-      final mensajeOx = evaluador.evaluarOxigenacion(double.tryParse(ox) ?? 0);
+      final mensajeFC = evaluador.evaluarFrecuenciaCardiaca(
+          double.tryParse(nuevosSignos.frecuenciaCardiaca) ?? 0);
+      final mensajeOx = evaluador
+          .evaluarOxigenacion(double.tryParse(nuevosSignos.oxigenacion) ?? 0);
       final mensajeTemp = evaluador.evaluarTemperatura(_signos!.temperatura);
 
       final evaluaciones = {
