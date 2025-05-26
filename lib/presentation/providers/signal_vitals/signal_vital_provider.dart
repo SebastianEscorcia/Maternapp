@@ -37,11 +37,20 @@ class SignosVitalesProvider with ChangeNotifier {
     try {
       final nuevosSignos = await _servicio.obtenerSignosDesdeSmartwatch();
 
+      final fc = nuevosSignos.frecuenciaCardiaca;
+      final ox = nuevosSignos.oxigenacion;
+
+      // Validar si los datos son correctos
+      if (fc == "No message received" || ox == "No message received") {
+        throw Exception(
+            "Smartwatch no está conectado o no envió datos válidos");
+      }
+
       _signos = SignosVitales(
         maternaId: maternaId,
-        frecuenciaCardiaca: nuevosSignos.frecuenciaCardiaca,
+        frecuenciaCardiaca: fc,
         temperatura: nuevosSignos.temperatura,
-        oxigenacion: nuevosSignos.oxigenacion,
+        oxigenacion: ox,
         fecha: DateTime.now(),
       );
 
@@ -50,15 +59,11 @@ class SignosVitalesProvider with ChangeNotifier {
         onOverwrite: agregarAlHistorialLocal,
       );
 
-      // 👇 Evaluación de signos vitales
       final evaluador = EvaluadorSignosVitales(esMaterna: esMaterna);
 
-      final mensajeFC = evaluador.evaluarFrecuenciaCardiaca(
-        double.tryParse(_signos!.frecuenciaCardiaca) ?? 0,
-      );
-      final mensajeOx = evaluador.evaluarOxigenacion(
-        double.tryParse(_signos!.oxigenacion) ?? 0,
-      );
+      final mensajeFC =
+          evaluador.evaluarFrecuenciaCardiaca(double.tryParse(fc) ?? 0);
+      final mensajeOx = evaluador.evaluarOxigenacion(double.tryParse(ox) ?? 0);
       final mensajeTemp = evaluador.evaluarTemperatura(_signos!.temperatura);
 
       final evaluaciones = {
@@ -73,9 +78,7 @@ class SignosVitalesProvider with ChangeNotifier {
         esMaterna: esMaterna,
       );
 
-      // 👇 Guardar el mensaje final (opcional para la UI)
       _mensajeEvaluacion = "$mensajeFC\n$mensajeOx\n$mensajeTemp";
-      notifyListeners();
     } catch (e) {
       print("Error al obtener signos vitales: $e");
       _signos = null;

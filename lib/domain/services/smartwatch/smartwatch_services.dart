@@ -40,7 +40,7 @@ class SmartwatchServices {
   Future<Map<String, dynamic>> obtenerSignosVitales() async {
     try {
       await enviarMensajeAlReloj();
-      var nodes = await obtenerNodosConectados();
+      final nodes = await obtenerNodosConectados();
 
       if (nodes.isEmpty) {
         return {"mensaje": "No tiene ningun Smartwatch conectado"};
@@ -52,7 +52,7 @@ class SmartwatchServices {
     } catch (e) {
       debugPrint('Error en comunicación con el reloj: $e');
       return {
-        "error": "Conecte el Smartwatch a su teléfono e intente nuevamente"
+        "error": "Conecte el Smartwatch a su teléfono e intente nuevamente: $e"
       };
     }
   }

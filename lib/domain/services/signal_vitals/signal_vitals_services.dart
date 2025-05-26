@@ -11,13 +11,15 @@ class SignosVitalesService {
 
   Future<SignosVitales> obtenerSignosDesdeSmartwatch() async {
     final result = await _smartwatch.obtenerSignosVitales();
+    print("Datos recibidos del smartwatch: $result");
 
     if (result.containsKey("error")) {
       throw Exception(result["error"]);
     }
 
-    var fc = result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
-    var ox = result['Oxigenacion']?.toString() ?? 'No message received';
+    final fc =
+        result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
+    final ox = result['Oxigenacion']?.toString() ?? 'No message received';
 
     return SignosVitales.empty(fc, ox);
   }
@@ -117,6 +119,7 @@ class SignosVitalesService {
       'esMaterna': esMaterna,
     });
   }
+
   // método para leer las evaluaciones guardadas
   Future<List<Map<String, dynamic>>> obtenerHistorialEvaluaciones(
       String maternaId) async {
