@@ -76,10 +76,11 @@ class LogoutButton extends StatelessWidget {
 
     if (!confirmed) return;
 
-    // Mostrar animación de salida
+    // Mostrar animación de salida (usa rootNavigator para evitar quedarse colgado)
     showDialog(
       context: context,
       barrierDismissible: false,
+      useRootNavigator: true,
       builder: (_) => Center(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -122,8 +123,12 @@ class LogoutButton extends StatelessWidget {
     }
 
     if (context.mounted) {
-      Navigator.pop(context); // Cierra diálogo de carga
-      Navigator.pushNamedAndRemoveUntil(context, Routes.inicio, (_) => false);
+      Navigator.of(context, rootNavigator: true).pop(); // Cierra el diálogo
+
+      Future.microtask(() {
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.splashScreen, (_) => false);
+      });
     }
   }
 }
