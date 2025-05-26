@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../../../presentation/providers/maternal_provider.dart';
 import '../../../presentation/providers/signal_vitals/signal_vital_provider.dart';
+import 'evaluador_signos.dart';
 
 void mostrarSelectorSmartwatch(BuildContext context) {
-  final materna = context.read<MaternaProvider>().materna;
   showDialog(
     context: context,
     builder: (dialogContext) {
@@ -18,33 +18,136 @@ void mostrarSelectorSmartwatch(BuildContext context) {
         actions: [
           TextButton.icon(
             onPressed: () async {
-              Navigator.of(dialogContext)
-                  .pop(); // Cierra el diálogo del selector
+              Navigator.of(dialogContext).pop();
 
               final scaffoldContext =
                   Scaffold.maybeOf(context)?.context ?? context;
 
               await _mostrarDialogoConectando(context);
 
-              final resultado = await simularConexionDispositivo();
-              if (materna != null) {
-                await Provider.of<SignosVitalesProvider>(context, listen: false)
-                    .actualizarSignos(materna.uid);
-              }
-              debugPrint("Resultado conexión smartwatch: $resultado");
+              try {
+                final materna = context.read<MaternaProvider>().materna;
+                final provider = context.read<SignosVitalesProvider>();
 
-              ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-                SnackBar(
-                  content: Text(resultado),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                if (materna != null) {
+                  await provider.actualizarSignos(materna.uid, esMaterna: true);
+
+                  final signos = provider.signos!;
+                  final evaluador = EvaluadorSignosVitales(esMaterna: true);
+
+                  final resultados = [
+                    {
+                      'label': 'Frecuencia Cardíaca',
+                      'valor': '${signos.frecuenciaCardiaca} bpm',
+                      'estado': evaluador.evaluarFrecuenciaCardiaca(
+                        double.tryParse(signos.frecuenciaCardiaca) ?? 0,
+                      ),
+                      'icon': Icons.favorite,
+                    },
+                    {
+                      'label': 'Oxigenación',
+                      'valor': '${signos.oxigenacion} %',
+                      'estado': evaluador.evaluarOxigenacion(
+                        double.tryParse(signos.oxigenacion) ?? 0,
+                      ),
+                      'icon': Icons.bubble_chart,
+                    },
+                    {
+                      'label': 'Temperatura',
+                      'valor': '${signos.temperatura.toStringAsFixed(1)} °C',
+                      'estado':
+                          evaluador.evaluarTemperatura(signos.temperatura),
+                      'icon': Icons.thermostat,
+                    },
+                  ];
+
+                  Color colorEstado(String estado) {
+                    if (estado.contains("normal")) return Colors.green;
+                    if (estado.contains("alta") || estado.contains("baja"))
+                      return Colors.amber;
+                    return Colors.redAccent;
+                  }
+
+                  await showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      title: const Text("🩺 Evaluación de signos vitales"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: resultados.map((res) {
+                          final estado = res['estado'] as String;
+                          final color = colorEstado(estado);
+
+                          return Card(
+                            color: color.withAlpha(1),
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            child: ListTile(
+                              leading:
+                                  Icon(res['icon'] as IconData, color: color),
+                              title: Text(
+                                res['label'] as String,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, color: color),
+                              ),
+                              subtitle: Text(
+                                estado,
+                                style: TextStyle(color: color),
+                              ),
+                              trailing: Text(
+                                res['valor'] as String,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: color,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Cerrar"),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text("Dispositivo Wear OS conectado correctamente"),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString().contains("Smartwatch")
+                        ? e.toString().replaceAll("Exception: ", "")
+                        : "Ocurrió un error inesperado"),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: Colors.redAccent,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    duration: const Duration(seconds: 3),
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  backgroundColor: Colors.green,
-                  duration: const Duration(seconds: 1),
-                ),
-              );
+                );
+              }
             },
             icon: const Icon(Icons.watch),
             label: const Text("Smartwatch Wear OS"),
@@ -101,10 +204,5 @@ Future<void> _mostrarDialogoConectando(BuildContext context) async {
     ),
   );
   await Future.delayed(const Duration(seconds: 1));
-  Navigator.of(context).pop(); // Cierra el diálogo de carga
-}
-
-Future<String> simularConexionDispositivo() async {
-  await Future.delayed(const Duration(seconds: 1));
-  return "Dispositivo Wear OS conectado correctamente";
+  Navigator.of(context).pop();
 }

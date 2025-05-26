@@ -20,5 +20,7 @@ class Routes {
   static const String vincularFamiliarScreen = '/vincularFamiliar';
   static const String homeFamiliar = '/homeFamiliar';
   static const String mainScaffoldNavbarFamiliar= '/navbarFamiliar';
+  static const String historialSignosVitales = '/historialSignosVitales';
+  static const String historialEvaluaciones = '/historialEvaluaciones';
 
 }

@@ -50,6 +50,11 @@ dependencies:
   fl_chart: ^1.0.0
   qr_flutter: ^4.1.0
   uuid: ^4.5.1
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  iconsax: ^0.0.8
+  share_plus: ^11.0.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +78,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/maternapp.png
+    - assets/images/logo.png
     - assets/animations/loading_heart.json
     - assets/animations/family1.json
     - assets/animations/family2.json
@@ -90,6 +96,8 @@ flutter:
     - assets/images/medical_icon.png
     - assets/images/locked_icon.png
     - assets/config/.env
+    - assets/fonts/OpenSans-Regular.ttf
+    - assets/fonts/OpenSans-Bold.ttf
 
 
   # To add assets to your application, add an assets section, like this:

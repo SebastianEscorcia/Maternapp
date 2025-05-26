@@ -30,6 +30,8 @@ import 'presentation/screens/questions/questions_familiar_screen.dart';
 import 'presentation/screens/questions/questions_materna_screen.dart';
 import 'presentation/screens/splash screen/splash_screen.dart';
 import 'presentation/screens/tips/tips_screen.dart';
+import 'presentation/screens/vitals/historial_evaluaciones_screen.dart';
+import 'presentation/screens/vitals/historial_signos_vitales_screen.dart';
 import 'presentation/screens/vitals/vitals_screen.dart';
 import 'presentation/screens/welcome/welcome_screen.dart';
 import 'presentation/screens/calendar/calendar_screen.dart';
@@ -99,6 +101,8 @@ class MyApp extends StatelessWidget {
         },
         Routes.welcomeFamiliarScreen: (context) => const WelcomeFamiliarScreen(),
         Routes.inicio:(context) => InitialChoiceScreen(),
+        Routes.historialSignosVitales: (context) => HistorialSignosVitalesScreen(),
+        Routes.historialEvaluaciones: (context) => HistorialEvaluacionesScreen(),
       },
     );
   }

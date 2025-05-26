@@ -107,7 +107,13 @@ class SintomaProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _registroHoy = await _service.obtenerSintomasHoy(maternaUid);
+    final resultado = await _service.obtenerSintomasHoy(maternaUid);
+    _registroHoy = resultado ??
+        RegistroSintomasDiarios(
+          id: maternaUid,
+          fecha: DateTime.now(),
+          sintomasIds: [],
+        );
 
     _isLoading = false;
     notifyListeners();

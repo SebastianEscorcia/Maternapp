@@ -44,26 +44,25 @@ class VitalsScreen extends StatelessWidget {
               VitalCard(
                 icon: Icons.favorite_border,
                 title: "Frecuencia cardíaca",
-                value: signos != null
-                    ? "${signos.frecuenciaCardiaca} "
-                    : "-- bpm",
+                value:
+                    signos != null ? "${signos.frecuenciaCardiaca} " : "-- bpm",
                 color: Colors.redAccent,
               ),
               const SizedBox(height: 16),
               // 🌡️ Temperatura
-              VitalCard(
+              /* VitalCard(
                 icon: Icons.thermostat_outlined,
                 title: "Temperatura",
                 value: "36.7 °C",
                 color: Colors.orange,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16),*/
 
               // 💨 Oxigenación
               VitalCard(
                 icon: Icons.bubble_chart_outlined,
                 title: "Oxigenación",
-                value: "98 %",
+                value: signos != null ? signos.oxigenacion : "-- %",
                 color: Colors.blue,
               ),
 
@@ -94,6 +93,60 @@ class VitalsScreen extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(height: 20),
+              //BOTÓN PARA IR AL HISTORIAL DE SINTOMAS
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/historialSignosVitales');
+                  },
+                  icon: const Icon(Icons.history),
+                  label: const Text(
+                    "Ver historial",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                    elevation: 4,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 28, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // BOTÓN PARA IR AL HISTORIAL DE EVALUACIONES
+              Center(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/historialEvaluaciones');
+                  },
+                  icon: const Icon(Icons.health_and_safety),
+                  label: const Text(
+                    "Historial de evaluaciones",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    elevation: 4,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),

@@ -32,21 +32,29 @@ class SmartwatchServices {
     } catch (e, s) {
       debugPrint('Error enviando mensaje al reloj: $e');
       debugPrint('$s');
+      throw Exception("Conecte el Smartwatch a su teléfono e intente nuevamente");
     }
   }
 
   // Obtener signos vitales
   Future<Map<String, dynamic>> obtenerSignosVitales() async {
-    await enviarMensajeAlReloj();
-    var nodes = await obtenerNodosConectados();
+    try {
+      await enviarMensajeAlReloj();
+      var nodes = await obtenerNodosConectados();
 
-    if (nodes.isEmpty) {
-      return {"mensaje": "No tiene ningun Smartwatch conectado"};
+      if (nodes.isEmpty) {
+        return {"mensaje": "No tiene ningun Smartwatch conectado"};
+      }
+      // Espera la primera respuesta recibida
+      final response = await onMessageReceived.first;
+
+      return {"Frecuencia_cardiaca": response, "oxigenacion": response};
+    } catch (e) {
+      debugPrint('Error en comunicación con el reloj: $e');
+      return {
+        "error": "Conecte el Smartwatch a su teléfono e intente nuevamente"
+      };
     }
-    // Espera la primera respuesta recibida
-    final response = await onMessageReceived.first;
-
-    return {"Frecuencia_cardiaca": response};
   }
 
   // Obtener nodos conectados
