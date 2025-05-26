@@ -113,6 +113,27 @@ class SintomaProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<RegistroSintomasDiarios?> obtenerSintomasHoySinNotificar(
+      String maternaUid) async {
+    try {
+      final now = DateTime.now();
+      final fechaStr =
+          "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final docId = "${maternaUid}_$fechaStr";
+
+      final docRef =
+          FirebaseFirestore.instance.collection('registros_diarios').doc(docId);
+      final doc = await docRef.get();
+
+      if (!doc.exists) return null;
+
+      return RegistroSintomasDiarios.fromMap(doc.id, doc.data()!);
+    } catch (e) {
+      print("Error leyendo síntomas sin notificar: $e");
+      return null;
+    }
+  }
+
   Future<void> actualizarSintomasDeHoy(
       String maternaUid, List<String> sintomasIds) async {
     _guardandoSeleccion = true;

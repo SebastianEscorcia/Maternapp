@@ -22,24 +22,15 @@ class SintomasDiariosService {
     });
   }
 
-  Future<RegistroSintomasDiarios> obtenerSintomasHoy(String maternaUid) async {
+  Future<RegistroSintomasDiarios?> obtenerSintomasHoy(String maternaUid) async {
     final now = DateTime.now();
     final fechaStr = _formatoFecha(now);
-    // Formato de fecha: YYYY-MM-DD
     final docId = "${maternaUid}_$fechaStr";
 
     final docRef = _db.collection('registros_diarios').doc(docId);
     final doc = await docRef.get();
 
-    if (!doc.exists) {
-      final data = {
-        'maternaUid': maternaUid,
-        'fecha': Timestamp.fromDate(now),
-        'sintomasIds': <String>[],
-      };
-      await docRef.set(data);
-      return RegistroSintomasDiarios.fromMap(docRef.id, data);
-    }
+    if (!doc.exists) return null;
 
     return RegistroSintomasDiarios.fromMap(doc.id, doc.data()!);
   }
