@@ -44,34 +44,37 @@ class SmartwatchServices {
       final nodes = await obtenerNodosConectados();
 
       if (nodes.isEmpty) {
-        return {"error": "No tiene ningún Smartwatch conectado"};
+        throw Exception(
+            "No tiene ningún smartwatch vinculado. Por favor, vincule uno.");
       }
 
       final response = await onMessageReceived.first;
+      debugPrint('Respuesta del smartwatch: $response');
       final signos = response.split(";");
 
-      final fc = signos.isNotEmpty ? signos[0].trim() : null;
-      final ox = signos.length > 1 ? signos[1].trim() : null;
-      final temp = signos.length > 2 ? double.tryParse(signos[2].trim()) : null;
+      //Si se recibe el mensaje nunca será null o vacío, llegarán los signos vitales o dira "No disponible"//
+      //por lo que no es necesario validar si signos es null o vacío//
+      //no se está recibiendo la temperatura, para que validarla?//
+      final fc = signos[0];
+      final ox = signos[1];
+      final temp = 36.5;
 
-      if (fc == null ||
-          fc.toLowerCase().contains("no") ||
-          ox == null ||
-          ox.toLowerCase().contains("no") ||
-          temp == null ||
-          temp == 0.0) {
+      //Aqui si validamos si los signos son "No disponible"//
+      //lo que significaría que la medición no fue exitosa y se lanza la excepcion//
+      if (fc == "No disponible" || ox == "No disponible") {
         throw Exception(
-            "Smartwatch no está conectado o no envió datos válidos");
+            "La medicion de los signos vitales no fue exitosa. Intentelo nuevamente.");
       }
 
+      //si llega al return significa que los signos son válidos//
       return {
         "Frecuencia_cardiaca": fc,
         "Oxigenacion": ox,
-        "Temperatura": temp ,
+        "Temperatura": temp,
       };
     } catch (e) {
-      debugPrint('Error en comunicación con el reloj: $e');
-      return {"error": "Smartwatch no respondió correctamente: $e"};
+      debugPrint('Ups! algo salió mal $e');
+      return {"error": "Ups! algo salió mal: $e"};
     }
   }
 

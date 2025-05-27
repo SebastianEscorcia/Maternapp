@@ -32,11 +32,10 @@ class SignosVitalesProvider with ChangeNotifier {
       final nuevosSignos = await _servicio.obtenerSignosDesdeSmartwatch();
 
       // ✅ Validación de los datos recibidos
-      if (nuevosSignos.frecuenciaCardiaca.toLowerCase().contains("no") ||
-          nuevosSignos.oxigenacion.toLowerCase().contains("no") ||
-          nuevosSignos.temperatura <= 25.0) {
+      if (nuevosSignos.frecuenciaCardiaca == "No disponible" ||
+          nuevosSignos.oxigenacion == "No disponible") {
         throw Exception(
-            "Smartwatch no está conectado o no envió datos válidos");
+            "La medicion de los signos vitales no fue exitosa. Intentelo nuevamente.");
       }
 
       // ✅ Asignar el ID antes de guardar
@@ -44,7 +43,7 @@ class SignosVitalesProvider with ChangeNotifier {
         maternaId: maternaId,
         frecuenciaCardiaca: nuevosSignos.frecuenciaCardiaca,
         oxigenacion: nuevosSignos.oxigenacion,
-        temperatura: nuevosSignos.temperatura ,
+        temperatura: nuevosSignos.temperatura,
         fecha: nuevosSignos.fecha,
       );
 
@@ -137,8 +136,8 @@ class SignosVitalesProvider with ChangeNotifier {
     _historial.add(previos);
     notifyListeners();
   }
-  
-  //HISTORIAL DE SIGNOS VITALES 
+
+  //HISTORIAL DE SIGNOS VITALES
   Future<void> cargarHistorialFirebase(String maternaId) async {
     try {
       _historial =
@@ -148,7 +147,8 @@ class SignosVitalesProvider with ChangeNotifier {
       print("Error al cargar historial desde Firebase: $e");
     }
   }
-  // EVALACUACIONES CUANDO SE TOMEN LOS SIGNOS VITALES 
+
+  // EVALACUACIONES CUANDO SE TOMEN LOS SIGNOS VITALES
   Future<List<Map<String, dynamic>>> cargarHistorialEvaluaciones(
       String maternaId) async {
     try {

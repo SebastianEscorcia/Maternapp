@@ -10,20 +10,22 @@ class SignosVitalesService {
   }
 
   Future<SignosVitales> obtenerSignosDesdeSmartwatch() async {
-    final result = await _smartwatch.obtenerSignosVitales();
-    print("Datos recibidos del smartwatch: $result");
+    //metemos el codigo en un try-catch para capturar la excepción
+    try {
+      final result = await _smartwatch.obtenerSignosVitales();
+      print("Datos recibidos del smartwatch: $result");
 
-    if (result.containsKey("error")) {
-      throw Exception(result["error"]);
+      // Procesamos el map
+      final fc = result['Frecuencia_cardiaca'].toString();
+      final ox = result['Oxigenacion'].toString();
+      final temp = result['Temperatura'].toDouble();
+
+      // Usamos el constructor que recibe los valores
+      return SignosVitales.empty(fc, ox, temp);
+    } catch (e) {
+      print("Error al obtener signos desde el smartwatch: $e");
+      rethrow; // Puedes lanzar de nuevo la excepción o retornar un valor por defecto si lo prefieres
     }
-
-    //procesamos el map
-    final fc = result['Frecuencia_cardiaca']?.toString() ?? 'No disponible';
-    final ox = result['Oxigenacion']?.toString() ?? 'No disponible';
-    final temp = result['Temperatura'] is double ? result['Temperatura'] : 36.5;
-
-    //y usamos el constructor que recibe los valores
-    return SignosVitales.empty(fc, ox, temp);
   }
 
   Future<void> guardarSignosVitales(
@@ -73,8 +75,6 @@ class SignosVitalesService {
     );
   }
 
-  
-  
   // Método para obtener el historial de signos vitales
   Future<List<SignosVitales>> obtenerHistorialGuardadoEnFirebase(
       String maternaId) async {
