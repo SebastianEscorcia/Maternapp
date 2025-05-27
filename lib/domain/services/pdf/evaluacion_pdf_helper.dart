@@ -11,8 +11,11 @@ import 'package:flutter/services.dart' show rootBundle;
 
 class EvaluacionPdfHelper {
   static pw.ImageProvider? _cachedLogo;
-  static Future<pw.Font> get _fontRegular async =>
-      pw.Font.ttf(await rootBundle.load('assets/fonts/OpenSans-Regular.ttf'));
+  static Future<pw.Font> get _fontRegular async => pw.Font.ttf(
+      await rootBundle.load('assets/fonts/NotoSansSymbols-Regular.ttf'));
+
+  static Future<pw.Font> get _fontEmoji async => pw.Font.ttf(
+      await rootBundle.load('assets/fonts/NotoColorEmoji-Regular.ttf'));
 
   static Future<pw.Font> get _fontBold async =>
       pw.Font.ttf(await rootBundle.load('assets/fonts/OpenSans-Bold.ttf'));
@@ -85,8 +88,14 @@ class EvaluacionPdfHelper {
     final now = DateTime.now();
     final formatter = DateFormat('yyyy-MM-dd');
 
+    final emojiFont = await _fontEmoji;
+
     final pdf = pw.Document(
-      theme: pw.ThemeData.withFont(base: fontRegular, bold: fontBold),
+      theme: pw.ThemeData.withFont(
+        base: fontRegular,
+        bold: fontBold,
+        fontFallback: [emojiFont],
+      ),
     );
 
     final logoImage = await _obtenerLogo();
@@ -168,6 +177,7 @@ class EvaluacionPdfHelper {
       ],
     );
   }
+
   // Hacer que el logo cargue mucho más rápido
   static Future<pw.ImageProvider?> _obtenerLogo() async {
     if (_cachedLogo != null) return _cachedLogo;

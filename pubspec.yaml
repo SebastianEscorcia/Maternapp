@@ -98,7 +98,8 @@ flutter:
     - assets/config/.env
     - assets/fonts/OpenSans-Regular.ttf
     - assets/fonts/OpenSans-Bold.ttf
-
+    - assets/fonts/NotoSansSymbols-VariableFont_wght.ttf
+    - assets/fonts/NotoColorEmoji-Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:
