@@ -44,25 +44,34 @@ class SmartwatchServices {
       final nodes = await obtenerNodosConectados();
 
       if (nodes.isEmpty) {
-        return {"mensaje": "No tiene ningun Smartwatch conectado"};
+        return {"error": "No tiene ningún Smartwatch conectado"};
       }
-      // Espera la primera respuesta recibida
+
       final response = await onMessageReceived.first;
-
       final signos = response.split(";");
-      final fc = signos.isNotEmpty ? signos[0] : "No hay datos";
-      final ox = signos.length > 1 ? signos[1] : "No hay datos";
 
-      //Se manda el map de los resultados
+      final fc = signos.isNotEmpty ? signos[0].trim() : null;
+      final ox = signos.length > 1 ? signos[1].trim() : null;
+      final temp = signos.length > 2 ? double.tryParse(signos[2].trim()) : null;
+
+      if (fc == null ||
+          fc.toLowerCase().contains("no") ||
+          ox == null ||
+          ox.toLowerCase().contains("no") ||
+          temp == null ||
+          temp == 0.0) {
+        throw Exception(
+            "Smartwatch no está conectado o no envió datos válidos");
+      }
+
       return {
         "Frecuencia_cardiaca": fc,
         "Oxigenacion": ox,
+        "Temperatura": temp ,
       };
     } catch (e) {
       debugPrint('Error en comunicación con el reloj: $e');
-      return {
-        "error": "Conecte el Smartwatch a su teléfono e intente nuevamente: $e"
-      };
+      return {"error": "Smartwatch no respondió correctamente: $e"};
     }
   }
 

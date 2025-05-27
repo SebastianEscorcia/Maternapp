@@ -79,24 +79,33 @@ void mostrarSelectorSmartwatch(BuildContext context) {
                           mainAxisSize: MainAxisSize.min,
                           children: resultados.map((res) {
                             final estado = res['estado'] as String;
+                            final icono = res['icon'] as IconData;
                             final color = colorEstado(estado);
+                            final label = res['label'] as String;
+                            final valor = res['valor'] as String;
+
+                            final esValorInvalido =
+                                valor.toLowerCase().contains("no") ||
+                                    valor == "0.0 °C";
 
                             return Card(
-                              color: color.withAlpha(1),
+                              color: color.withOpacity(0.1),
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               child: ListTile(
-                                leading:
-                                    Icon(res['icon'] as IconData, color: color),
+                                leading: Icon(icono, color: color),
                                 title: Text(
-                                  res['label'] as String,
+                                  label,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: color),
+                                    fontWeight: FontWeight.bold,
+                                    color: color,
+                                  ),
                                 ),
-                                subtitle: Text(estado,
-                                    style: TextStyle(color: color)),
+                                subtitle: Text(
+                                  estado,
+                                  style: TextStyle(color: color),
+                                ),
                                 trailing: Text(
-                                  res['valor'] as String,
+                                  esValorInvalido ? "--" : valor,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: color,
@@ -173,6 +182,25 @@ void mostrarSelectorSmartwatch(BuildContext context) {
             },
             icon: const Icon(Icons.watch_outlined),
             label: const Text("Huawei"),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              final materna = context.read<MaternaProvider>().materna;
+              if (materna != null) {
+                await context
+                    .read<SignosVitalesProvider>()
+                    .actualizarSignosSimulados(
+                      materna.uid,
+                      esMaterna: true,
+                    );
+              }
+            },
+            icon: const Icon(Icons.bug_report),
+            label: const Text("Simular lectura"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepOrange,
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       );

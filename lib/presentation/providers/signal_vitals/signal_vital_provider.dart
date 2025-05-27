@@ -19,15 +19,9 @@ class SignosVitalesProvider with ChangeNotifier {
   String? _mensajeEvaluacion;
   String? get mensajeEvaluacion => _mensajeEvaluacion;
 
-  List<Map<String, dynamic>> _historialEvaluaciones = [];
+  final List<Map<String, dynamic>> _historialEvaluaciones = [];
   List<Map<String, dynamic>> get historialEvaluaciones =>
       _historialEvaluaciones;
-
-  Future<void> cargarHistorialEvaluaciones(String maternaId) async {
-    _historialEvaluaciones =
-        await _servicio.obtenerHistorialEvaluaciones(maternaId);
-    notifyListeners();
-  }
 
   Future<void> actualizarSignos(String maternaId,
       {required bool esMaterna}) async {
@@ -37,37 +31,37 @@ class SignosVitalesProvider with ChangeNotifier {
     try {
       final nuevosSignos = await _servicio.obtenerSignosDesdeSmartwatch();
 
-      _signos = nuevosSignos;
-      //final fc = nuevosSignos.frecuenciaCardiaca;
-      //final ox = nuevosSignos.oxigenacion;
-
-      // Validar si los datos son correctos ******* esta validacion estaba mal hecha, se puede mantener pero debe refactorizarse**********
-      /*if (fc == "No message received" || ox == "No message received") {
+      // ✅ Validación de los datos recibidos
+      if (nuevosSignos.frecuenciaCardiaca.toLowerCase().contains("no") ||
+          nuevosSignos.oxigenacion.toLowerCase().contains("no") ||
+          nuevosSignos.temperatura <= 25.0) {
         throw Exception(
             "Smartwatch no está conectado o no envió datos válidos");
-      }*/
+      }
 
-      //****** aqui no es necesario crear un nuevo objeto porque el metodo obtenerSignosDesdeSmartwatch() devuelve el objeto creado */
-      /*_signos = SignosVitales(
+      // ✅ Asignar el ID antes de guardar
+      final signosConId = SignosVitales(
         maternaId: maternaId,
-        frecuenciaCardiaca: fc,
-        temperatura: nuevosSignos.temperatura,
-        oxigenacion: ox,
-        fecha: DateTime.now(),
-      );*/
+        frecuenciaCardiaca: nuevosSignos.frecuenciaCardiaca,
+        oxigenacion: nuevosSignos.oxigenacion,
+        temperatura: nuevosSignos.temperatura ,
+        fecha: nuevosSignos.fecha,
+      );
+
+      _signos = signosConId;
 
       await _servicio.guardarSignosVitales(
-        nuevosSignos!,
+        signosConId,
         onOverwrite: agregarAlHistorialLocal,
       );
 
       final evaluador = EvaluadorSignosVitales(esMaterna: esMaterna);
 
       final mensajeFC = evaluador.evaluarFrecuenciaCardiaca(
-          double.tryParse(nuevosSignos.frecuenciaCardiaca) ?? 0);
+          double.tryParse(signosConId.frecuenciaCardiaca) ?? 0);
       final mensajeOx = evaluador
-          .evaluarOxigenacion(double.tryParse(nuevosSignos.oxigenacion) ?? 0);
-      final mensajeTemp = evaluador.evaluarTemperatura(_signos!.temperatura);
+          .evaluarOxigenacion(double.tryParse(signosConId.oxigenacion) ?? 0);
+      final mensajeTemp = evaluador.evaluarTemperatura(signosConId.temperatura);
 
       final evaluaciones = {
         'frecuenciaCardiaca': mensajeFC,
@@ -76,7 +70,7 @@ class SignosVitalesProvider with ChangeNotifier {
       };
 
       await _servicio.guardarEvaluacionVital(
-        signos: _signos!,
+        signos: signosConId,
         evaluaciones: evaluaciones,
         esMaterna: esMaterna,
       );
@@ -92,20 +86,59 @@ class SignosVitalesProvider with ChangeNotifier {
     }
   }
 
+  Future<void> actualizarSignosSimulados(String maternaId,
+      {required bool esMaterna}) async {
+    _cargando = true;
+    notifyListeners();
+
+    try {
+      final signosSimulados =
+          await _servicio.obtenerSignosSimulados(maternaId: maternaId);
+      _signos = signosSimulados;
+
+      await _servicio.guardarSignosVitales(
+        signosSimulados,
+        onOverwrite: agregarAlHistorialLocal,
+      );
+
+      final evaluador = EvaluadorSignosVitales(esMaterna: esMaterna);
+
+      final mensajeFC = evaluador.evaluarFrecuenciaCardiaca(
+          double.tryParse(signosSimulados.frecuenciaCardiaca) ?? 0);
+      final mensajeOx = evaluador.evaluarOxigenacion(
+          double.tryParse(signosSimulados.oxigenacion) ?? 0);
+      final mensajeTemp =
+          evaluador.evaluarTemperatura(signosSimulados.temperatura);
+
+      final evaluaciones = {
+        'frecuenciaCardiaca': mensajeFC,
+        'oxigenacion': mensajeOx,
+        'temperatura': mensajeTemp,
+      };
+
+      await _servicio.guardarEvaluacionVital(
+        signos: signosSimulados,
+        evaluaciones: evaluaciones,
+        esMaterna: esMaterna,
+      );
+
+      _mensajeEvaluacion = "$mensajeFC\n$mensajeOx\n$mensajeTemp";
+    } catch (e) {
+      print("Error en simulación: $e");
+      _signos = null;
+      rethrow;
+    } finally {
+      _cargando = false;
+      notifyListeners();
+    }
+  }
+
   void agregarAlHistorialLocal(SignosVitales previos) {
     _historial.add(previos);
     notifyListeners();
   }
-
-  Future<void> cargarHistorial(String maternaId) async {
-    try {
-      _historial = await _servicio.obtenerHistorial(maternaId);
-      notifyListeners();
-    } catch (e) {
-      print("Error al cargar historial de signos: $e");
-    }
-  }
-
+  
+  //HISTORIAL DE SIGNOS VITALES 
   Future<void> cargarHistorialFirebase(String maternaId) async {
     try {
       _historial =
@@ -113,6 +146,21 @@ class SignosVitalesProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("Error al cargar historial desde Firebase: $e");
+    }
+  }
+  // EVALACUACIONES CUANDO SE TOMEN LOS SIGNOS VITALES 
+  Future<List<Map<String, dynamic>>> cargarHistorialEvaluaciones(
+      String maternaId) async {
+    try {
+      final data = await _servicio.obtenerHistorialEvaluaciones(maternaId);
+      _historialEvaluaciones.clear();
+      _historialEvaluaciones.addAll(data);
+      print("✅ Evaluaciones cargadas: ${_historialEvaluaciones.length}");
+      notifyListeners();
+      return data;
+    } catch (e) {
+      print("Error al cargar historial de evaluaciones: $e");
+      return []; // Para que el FutureBuilder avance
     }
   }
 

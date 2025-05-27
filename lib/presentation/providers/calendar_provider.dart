@@ -63,17 +63,22 @@ class CalendarProvider extends ChangeNotifier {
   }
 
   Future<void> cargarCalendario(String uid) async {
-    try {
-      final calendario = await _calendarService.obtenerCalendario(uid);
-      if (calendario != null) {
-        _model = calendario;
-        print("✅ Calendario cargado: ${_model?.uId}");
-        notifyListeners();
-      }
-    } catch (e) {
-      if (kDebugMode) print('Error al cargar calendario: $e');
+  try {
+    final calendario = await _calendarService.obtenerCalendario(uid);
+    if (calendario != null) {
+      // 🔁 Recalcular dinámicamente los campos
+      _calendarService.calcularDetalles(calendario);
+      _model = calendario;
+      notifyListeners();
+
+      // ✅ Guardar cambios actualizados en Firebase
+      await guardarCambiosCalendarioEnFirebase();
+      print("✅ Calendario cargado y actualizado: ${_model?.uId}");
     }
+  } catch (e) {
+    if (kDebugMode) print('Error al cargar calendario: $e');
   }
+}
 
   Future<void> guardarCambiosCalendarioEnFirebase() async {
     if (_model == null || _model!.uId.isEmpty) return;

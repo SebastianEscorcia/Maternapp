@@ -18,12 +18,12 @@ class SignosVitalesService {
     }
 
     //procesamos el map
-    final fc =
-        result['Frecuencia_cardiaca']?.toString() ?? 'No message received';
-    final ox = result['Oxigenacion']?.toString() ?? 'No message received';
+    final fc = result['Frecuencia_cardiaca']?.toString() ?? 'No disponible';
+    final ox = result['Oxigenacion']?.toString() ?? 'No disponible';
+    final temp = result['Temperatura'] is double ? result['Temperatura'] : 36.5;
 
     //y usamos el constructor que recibe los valores
-    return SignosVitales.empty(fc, ox);
+    return SignosVitales.empty(fc, ox, temp);
   }
 
   Future<void> guardarSignosVitales(
@@ -60,36 +60,46 @@ class SignosVitalesService {
     await docRef.set(signos.toJson());
   }
 
-  // Método para obtener el historial de signos vitales
-  Future<List<SignosVitales>> obtenerHistorial(String maternaId) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('signos_vitales')
-        .doc(maternaId)
-        .collection('registros')
-        .orderBy('fecha', descending: true)
-        .get();
+  Future<SignosVitales> obtenerSignosSimulados(
+      {required String maternaId}) async {
+    await Future.delayed(const Duration(seconds: 1)); // Simula espera
 
-    return snapshot.docs
-        .map((doc) => SignosVitales.fromJson(doc.data()))
-        .toList();
+    return SignosVitales(
+      maternaId: maternaId,
+      frecuenciaCardiaca: "85", // bpm
+      temperatura: 36.6, // °C
+      oxigenacion: "98", // %
+      fecha: DateTime.now(),
+    );
   }
 
+  
+  
+  // Método para obtener el historial de signos vitales
   Future<List<SignosVitales>> obtenerHistorialGuardadoEnFirebase(
       String maternaId) async {
-    final now = DateTime.now();
-    final fechaStr = _formatoFecha(now);
-    final docId = "${maternaId}_$fechaStr";
+    final signosCollection =
+        FirebaseFirestore.instance.collection('signos_vitales');
 
-    final historialSnap = await FirebaseFirestore.instance
-        .collection('signos_vitales')
-        .doc(docId)
-        .collection('historial')
-        .orderBy('fecha')
-        .get();
+    // Filtrar todos los documentos que comiencen con el ID de la materna
+    final querySnapshot =
+        await signosCollection.where('maternaId', isEqualTo: maternaId).get();
 
-    return historialSnap.docs
-        .map((doc) => SignosVitales.fromJson(doc.data()))
-        .toList();
+    List<SignosVitales> historialCompleto = [];
+
+    for (final doc in querySnapshot.docs) {
+      final historialSnap = await signosCollection
+          .doc(doc.id)
+          .collection('historial')
+          .orderBy('fecha')
+          .get();
+
+      for (final histDoc in historialSnap.docs) {
+        historialCompleto.add(SignosVitales.fromJson(histDoc.data()));
+      }
+    }
+
+    return historialCompleto;
   }
 
   Future<SignosVitales> obtenerDesdeSmartwatch() async {

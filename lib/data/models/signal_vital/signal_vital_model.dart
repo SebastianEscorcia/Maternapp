@@ -22,13 +22,14 @@ class SignosVitales {
       fecha: DateTime.parse(json['fecha']),
     );
   }
-  SignosVitales.empty(String f, String o)
+  SignosVitales.empty(String f, String o, [double? t])
       : maternaId = '',
-        frecuenciaCardiaca = f,
-        temperatura = 0.0,
-        oxigenacion = o,
+        frecuenciaCardiaca =
+            f.toLowerCase().contains("no") ? "No disponible" : f,
+        temperatura = (t != null && t > 25.0) ? t : 36.5,
+        oxigenacion = o.toLowerCase().contains("no") ? "No disponible" : o,
         fecha = DateTime.now();
-
+        
   Map<String, dynamic> toJson() {
     return {
       'maternaId': maternaId,

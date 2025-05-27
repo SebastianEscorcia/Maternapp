@@ -13,15 +13,15 @@ class HistorialSignosVitalesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final materna = context.read<MaternaProvider>().materna;
-    final provider = context.watch<SignosVitalesProvider>();
-
+    final provider = Provider.of<SignosVitalesProvider>(context, listen: false);
+    final future = provider.cargarHistorialFirebase(materna!.uid);
     return LayoutScaffold(
       title: "Historial de signos vitales",
       useMaternalBackground: true,
       showBack: true,
       bottomNav: null,
       child: FutureBuilder(
-        future: provider.cargarHistorialFirebase(materna!.uid),
+        future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
