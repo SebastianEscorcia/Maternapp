@@ -100,6 +100,7 @@ flutter:
     - assets/fonts/OpenSans-Bold.ttf
     - assets/fonts/NotoSansSymbols-VariableFont_wght.ttf
     - assets/fonts/NotoColorEmoji-Regular.ttf
+    - assets/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

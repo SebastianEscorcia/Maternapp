@@ -12,7 +12,7 @@ import 'package:flutter/services.dart' show rootBundle;
 class EvaluacionPdfHelper {
   static pw.ImageProvider? _cachedLogo;
   static Future<pw.Font> get _fontRegular async => pw.Font.ttf(
-      await rootBundle.load('assets/fonts/NotoSansSymbols-Regular.ttf'));
+      await rootBundle.load('assets/fonts/Roboto-Italic-VariableFont_wdth,wght.ttf'));
 
   static Future<pw.Font> get _fontEmoji async => pw.Font.ttf(
       await rootBundle.load('assets/fonts/NotoColorEmoji-Regular.ttf'));
