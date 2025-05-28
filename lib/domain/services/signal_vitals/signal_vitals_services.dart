@@ -61,6 +61,18 @@ class SignosVitalesService {
     print("Guardando signos vitales: $signos");
     await docRef.set(signos.toJson());
   }
+  Future<Map<String, dynamic>> obtenerNodosConectados() async {
+    try {
+      final nodes = await _smartwatch.obtenerNodosConectados();
+      if (nodes.isEmpty) {
+        throw Exception("No tiene ningún smartwatch vinculado. Por favor, vincule uno.");
+      }
+      return nodes.first; // Retorna el primer nodo conectado
+    } catch (e) {
+      print("Error obteniendo nodos conectados: $e");
+      return {};
+    }
+  }
 
   Future<SignosVitales> obtenerSignosSimulados(
       {required String maternaId}) async {

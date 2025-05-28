@@ -6,7 +6,7 @@ import '../../../domain/services/signal_vitals/signal_vitals_services.dart';
 
 class SignosVitalesProvider with ChangeNotifier {
   final SignosVitalesService _servicio = SignosVitalesService();
-
+  Map <String,dynamic> nodosConectados = {};
   List<SignosVitales> _historial = [];
   List<SignosVitales> get historial => _historial;
 
@@ -22,7 +22,20 @@ class SignosVitalesProvider with ChangeNotifier {
   final List<Map<String, dynamic>> _historialEvaluaciones = [];
   List<Map<String, dynamic>> get historialEvaluaciones =>
       _historialEvaluaciones;
+  
 
+  Future<bool> verificarConexiones() async {
+    try {
+      nodosConectados = await _servicio.obtenerNodosConectados();
+      if (nodosConectados.isEmpty) {
+        throw Exception(
+            "No tiene ningún smartwatch vinculado. Por favor, vincule uno.");
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   Future<void> actualizarSignos(String maternaId,
       {required bool esMaterna}) async {
     _cargando = true;

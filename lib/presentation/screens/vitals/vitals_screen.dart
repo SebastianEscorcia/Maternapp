@@ -74,7 +74,7 @@ class VitalsScreen extends StatelessWidget {
                   onPressed: () => mostrarSelectorSmartwatch(context),
                   icon: const Icon(Icons.watch),
                   label: const Text(
-                    "Conectar reloj inteligente",
+                    "Medir Signos Vitales",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -6,7 +6,36 @@ import '../../../presentation/providers/maternal_provider.dart';
 import '../../../presentation/providers/signal_vitals/signal_vital_provider.dart';
 import 'evaluador_signos.dart';
 
-void mostrarSelectorSmartwatch(BuildContext context) {
+void mostrarSelectorSmartwatch(BuildContext context) async {
+  final scaffoldContext = Scaffold.maybeOf(context)?.context ?? context;
+  final provider = context.read<SignosVitalesProvider>();
+
+  
+  await _mostrarDialogoBuscandoNodos(context);
+  
+  await Future.delayed(const Duration(seconds: 2));
+  // Verificar conexiones
+  final hayNodos = await provider.verificarConexiones();
+  Navigator.of(context).pop();
+
+  if (!hayNodos) {
+    ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+      const SnackBar(
+        content: Text(
+            "⚠️ No hay ningún smartwatch conectado. Por favor vincula uno."),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        duration: Duration(seconds: 3),
+      ),
+    );
+    return;
+  }
+
+  // Mostrar el selector de dispositivos
   showDialog(
     context: context,
     builder: (dialogContext) {
@@ -19,15 +48,10 @@ void mostrarSelectorSmartwatch(BuildContext context) {
           TextButton.icon(
             onPressed: () async {
               Navigator.of(dialogContext).pop();
-
-              final scaffoldContext =
-                  Scaffold.maybeOf(context)?.context ?? context;
-
               await _mostrarDialogoConectando(context);
 
               try {
                 final materna = context.read<MaternaProvider>().materna;
-                final provider = context.read<SignosVitalesProvider>();
 
                 if (materna != null) {
                   await provider.actualizarSignos(materna.uid, esMaterna: true);
@@ -189,10 +213,7 @@ void mostrarSelectorSmartwatch(BuildContext context) {
               if (materna != null) {
                 await context
                     .read<SignosVitalesProvider>()
-                    .actualizarSignosSimulados(
-                      materna.uid,
-                      esMaterna: true,
-                    );
+                    .actualizarSignosSimulados(materna.uid, esMaterna: true);
               }
             },
             icon: const Icon(Icons.bug_report),
@@ -206,6 +227,32 @@ void mostrarSelectorSmartwatch(BuildContext context) {
       );
     },
   );
+}
+
+Future<void> _mostrarDialogoBuscandoNodos(BuildContext context) async {
+  showDialog(
+      context: context,
+      builder: (_) => Center(
+              child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Buscando reloj conectado...",
+                    style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+                const SizedBox(height: 10),
+                Lottie.asset(
+                  'assets/animations/loading_heart.json',
+                  width: 120,
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          )));
 }
 
 Future<void> _mostrarDialogoConectando(BuildContext context) async {
@@ -234,6 +281,4 @@ Future<void> _mostrarDialogoConectando(BuildContext context) async {
       ),
     ),
   );
-  await Future.delayed(const Duration(seconds: 1));
-  Navigator.of(context).pop(); // Cierra el diálogo de carga
 }
